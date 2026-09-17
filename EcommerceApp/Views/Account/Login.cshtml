@@ -1,0 +1,276 @@
+@model EcommerceApp.Models.LoginViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Fondo con líneas diagonales tipo neón, igual que el logo */
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ff1a1a 40%, #ff5050 50%, #ff1a1a 60%, transparent);
+            opacity: 0.55;
+            filter: blur(1px);
+        }
+        body::before {
+            top: 10%;
+            left: -50%;
+            transform: rotate(-35deg);
+            box-shadow: 0 0 20px 2px rgba(255,30,30,0.6);
+        }
+        body::after {
+            bottom: 8%;
+            right: -50%;
+            transform: rotate(-35deg);
+            box-shadow: 0 0 20px 2px rgba(255,30,30,0.6);
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(255,20,20,0.10), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255,20,20,0.12), transparent 40%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: auto, auto, 40px 40px, 40px 40px;
+            pointer-events: none;
+        }
+
+        .login-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 1.1rem;
+            overflow: hidden;
+            background: linear-gradient(180deg, #141414 0%, #0d0d0d 100%);
+            border: 1px solid rgba(255,40,40,0.35);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.03),
+                0 25px 60px rgba(0,0,0,0.6),
+                0 0 45px rgba(255,20,20,0.15);
+        }
+
+        .login-header {
+            position: relative;
+            padding: 2rem 1.5rem 1.25rem;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(255,20,20,0.18) 0%, transparent 70%);
+            border-bottom: 1px solid rgba(255,40,40,0.25);
+        }
+        .login-header img {
+            height: 78px;
+            width: auto;
+            filter: drop-shadow(0 0 14px rgba(255,30,30,0.65));
+        }
+        .login-header h3 {
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 0.75rem 0 0.1rem;
+            text-shadow: 0 0 12px rgba(255,30,30,0.5);
+        }
+        .login-header small {
+            color: #b8b8b8;
+        }
+
+        .login-body {
+            padding: 2rem 1.75rem 1.75rem;
+        }
+
+        .form-label {
+            color: #d8d8d8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group-text {
+            background: #1c1c1c;
+            border: 1px solid #2c2c2c;
+            border-right: none;
+            color: #ff4d4d;
+        }
+        .form-control {
+            background: #1c1c1c;
+            border: 1px solid #2c2c2c;
+            border-left: none;
+            color: #f1f1f1;
+        }
+        .form-control::placeholder { color: #6b6b6b; }
+        .form-control:focus {
+            background: #1c1c1c;
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(255,20,20,0.25);
+            border-color: #ff2d2d;
+        }
+        .input-group:focus-within .input-group-text {
+            border-color: #ff2d2d;
+        }
+
+        .form-check-input {
+            background-color: #1c1c1c;
+            border: 1px solid #3a3a3a;
+        }
+        .form-check-input:checked {
+            background-color: #ff2d2d;
+            border-color: #ff2d2d;
+        }
+        .form-check-label { color: #cfcfcf; }
+
+        .btn-login {
+            background: linear-gradient(135deg, #ff2d2d 0%, #b30000 100%);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 0.65rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 8px 20px rgba(255,20,20,0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-login:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(255,20,20,0.5);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #6b6b6b;
+            margin: 1.25rem 0;
+            font-size: 0.8rem;
+        }
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #2c2c2c;
+        }
+        .divider:not(:empty)::before { margin-right: .75em; }
+        .divider:not(:empty)::after { margin-left: .75em; }
+
+        .btn-google {
+            background: #1c1c1c;
+            border: 1px solid #2c2c2c;
+            color: #eaeaea;
+            font-weight: 600;
+            padding: 0.6rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+        .btn-google:hover {
+            background: #232323;
+            color: #fff;
+            border-color: #ff2d2d;
+        }
+        .btn-google img { height: 18px; width: 18px; }
+
+        .login-body a {
+            color: #ff4d4d;
+        }
+        .login-body p { color: #9a9a9a; }
+
+        .alert-danger {
+            background: rgba(255,20,20,0.12);
+            border: 1px solid rgba(255,40,40,0.4);
+            color: #ff8080;
+        }
+        .text-danger { color: #ff5c5c !important; }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="card login-card">
+        <div class="login-header">
+            <img src="~/images/logo.png" alt="Logo" />
+            <h3>ECOMMERCE APP</h3>
+            <small>Inicia sesión para continuar</small>
+        </div>
+        <div class="login-body">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger py-2">@TempData["ErrorMessage"]</div>
+            }
+
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">👤</span>
+                        <input asp-for="Username" class="form-control" placeholder="Tu usuario" />
+                    </div>
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">🔒</span>
+                        <input asp-for="Password" class="form-control" placeholder="••••••••" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label"></label>
+                </div>
+
+                <button type="submit" class="btn btn-login w-100 mb-2">Iniciar Sesión</button>
+            </form>
+
+            <div class="divider">o</div>
+
+            <form asp-action="ExternalLogin" asp-route-provider="Google" method="post">
+                <button type="submit" class="btn btn-google w-100">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" />
+                    Iniciar sesión con Google
+                </button>
+            </form>
+
+            <p class="text-center mt-3 mb-0">
+                ¿No tienes cuenta? <a asp-action="Register" class="fw-semibold text-decoration-none">Regístrate</a>
+            </p>
+            <p class="text-center mt-2 mb-0" style="font-size: 0.8rem;">
+                <a asp-action="AdminLogin">Acceso administrador</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+## .NET
+bin/
+obj/
+*.user
+.vs/
+
+## Secrets - NUNCA subir contraseñas reales de la base de datos
+appsettings.Development.json
+appsettings.Production.json

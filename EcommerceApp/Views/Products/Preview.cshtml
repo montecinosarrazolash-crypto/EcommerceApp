@@ -1,0 +1,59 @@
+@model EcommerceApp.Models.Product
+@{
+    Layout = null;
+    ViewData["Title"] = Model.Name;
+    ViewData["AdminTitle"] = "Ver producto";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-page">
+    <div class="bg-grid"></div>
+    <partial name="_AdminHeader" />
+
+    <main class="admin-main">
+        <section class="admin-panel">
+            <div class="admin-panel__head">
+                <h2>@Model.Name</h2>
+                <a class="btn-admin-outline" asp-controller="Products" asp-action="Manage">← Volver</a>
+            </div>
+
+            <div class="admin-preview">
+                <img class="admin-preview__image" src="@(Model.ImageUrl ?? "/images/default-product.jpg")" alt="@Model.Name" />
+
+                <div>
+                    <dl>
+                        <div><dt>Categoría</dt><dd>@(Model.Category ?? "—")</dd></div>
+                        <div><dt>Precio</dt><dd>Bs @Model.Price.ToString("N2")</dd></div>
+                        <div>
+                            <dt>Stock</dt>
+                            <dd>
+                                <span class="stock-pill @(Model.Stock <= 5 ? "stock-pill--low" : "")">@Model.Stock unidades</span>
+                            </dd>
+                        </div>
+                        <div><dt>SKU</dt><dd>PRD-@Model.Id.ToString("D4")</dd></div>
+                        <div><dt>Creado</dt><dd>@Model.CreatedAt.ToString("dd/MM/yyyy")</dd></div>
+                        @if (Model.UpdatedAt != null)
+                        {
+                            <div><dt>Última edición</dt><dd>@Model.UpdatedAt.Value.ToString("dd/MM/yyyy")</dd></div>
+                        }
+                    </dl>
+
+                    <p style="color:var(--admin-muted); max-width:60ch; margin-bottom:24px;">@Model.Description</p>
+
+                    <div class="admin-form-actions">
+                        <a class="btn-admin-red" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id">Editar producto</a>
+                        <a class="btn-admin-outline" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+                        <a class="btn-admin-outline" asp-controller="Products" asp-action="Details" asp-route-id="@Model.Id" target="_blank">Ver como cliente ↗</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

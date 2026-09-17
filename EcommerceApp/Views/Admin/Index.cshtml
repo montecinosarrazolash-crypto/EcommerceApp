@@ -1,0 +1,127 @@
+@model EcommerceApp.Models.AdminDashboardViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Panel de administrador";
+    ViewData["AdminTitle"] = "IMAGEN";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-page">
+    <div class="bg-grid"></div>
+
+    <partial name="_AdminHeader" />
+
+    <main class="admin-main">
+        <section class="admin-stats">
+            <div class="stat-card">
+                <span class="stat-card__label">Productos</span>
+                <span class="stat-card__value">@Model.TotalProducts</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">Unidades en stock</span>
+                <span class="stat-card__value">@Model.TotalStock</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">Valor del inventario</span>
+                <span class="stat-card__value">Bs @Model.InventoryValue.ToString("N2")</span>
+            </div>
+            <div class="stat-card stat-card--warn">
+                <span class="stat-card__label">Stock bajo (≤ 5)</span>
+                <span class="stat-card__value">@Model.LowStockCount</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">Usuarios registrados</span>
+                <span class="stat-card__value">@Model.TotalUsers</span>
+            </div>
+        </section>
+
+        <section class="admin-actions">
+            <a class="action-card" asp-controller="Products" asp-action="Create">
+                <span class="action-card__icon">＋</span>
+                <span>Nuevo producto</span>
+            </a>
+            <a class="action-card" asp-controller="Products" asp-action="Manage">
+                <span class="action-card__icon">☰</span>
+                <span>Gestionar catálogo</span>
+            </a>
+        </section>
+
+        <section class="admin-panel" style="margin-bottom:24px;">
+            <div class="admin-panel__head">
+                <h2>Género y tallas</h2>
+            </div>
+            <div class="admin-breakdown">
+                <div class="admin-breakdown__group">
+                    <h3>Por género</h3>
+                    <div class="admin-pill-row">
+                        @foreach (var item in Model.GeneroCounts)
+                        {
+                            <span class="admin-pill">@item.Key <strong>@item.Value</strong></span>
+                        }
+                    </div>
+                </div>
+                <div class="admin-breakdown__group">
+                    <h3>Por talla</h3>
+                    <div class="admin-pill-row">
+                        @foreach (var item in Model.TallaCounts)
+                        {
+                            <span class="admin-pill">@item.Key <strong>@item.Value</strong></span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel__head">
+                <h2>Últimos productos agregados</h2>
+                <a asp-controller="Products" asp-action="Manage">Ver todos</a>
+            </div>
+
+            @if (!Model.RecentProducts.Any())
+            {
+                <p class="admin-empty">Todavía no registraste ningún producto.</p>
+            }
+            else
+            {
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.RecentProducts)
+                        {
+                            <tr>
+                                <td>@product.Name</td>
+                                <td>@(product.Category ?? "—")</td>
+                                <td>Bs @product.Price.ToString("N2")</td>
+                                <td>
+                                    <span class="stock-pill @(product.Stock <= 5 ? "stock-pill--low" : "")">
+                                        @product.Stock
+                                    </span>
+                                </td>
+                                <td class="admin-table__actions">
+                                    <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id">Editar</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    </main>
+</body>
+</html>

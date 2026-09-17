@@ -1,0 +1,96 @@
+@model EcommerceApp.Models.ProductCatalogViewModel
+@{
+    Layout = null;
+    var titles = new Dictionary<string, string>
+    {
+        { "Voley", "Vóley" },
+        { "Futbol", "Fútbol" },
+        { "Basquetbol", "Basquetbol" },
+        { "Otros", "Otros productos" }
+    };
+    ViewData["Title"] = Model.SelectedCategory != null && titles.ContainsKey(Model.SelectedCategory)
+        ? titles[Model.SelectedCategory]
+        : "Catálogo";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
+</head>
+<body class="home-page catalog-page">
+
+    <partial name="_SiteHeader" />
+
+    <div class="catalog-crumb">
+        <div class="catalog-crumb__inner">
+            <a asp-controller="Home" asp-action="Index">Inicio</a>
+            <span>/</span>
+            <span>@ViewData["Title"]</span>
+        </div>
+    </div>
+
+    <main class="catalog-main">
+        @if (!Model.Sections.Any() || Model.Sections.All(s => !s.Products.Any()))
+        {
+            <div class="catalog-empty">
+                <h2>Todavía no hay productos aquí</h2>
+                <p>Vuelve pronto — estamos cargando el catálogo.</p>
+                <a class="btn-solid" asp-controller="Home" asp-action="Index">Volver al inicio</a>
+            </div>
+        }
+        else
+        {
+            @foreach (var grupo in Model.Sections)
+            {
+                <section class="catalog-section">
+                    <div class="catalog-section__head">
+                        <h2>@(titles.ContainsKey(grupo.Category) ? titles[grupo.Category] : grupo.Category)</h2>
+                        <span class="catalog-section__count">@grupo.Products.Count producto(s)</span>
+                    </div>
+
+                    <div class="catalog-grid">
+                        @foreach (var product in grupo.Products)
+                        {
+                            <article class="product-card">
+                                <a class="product-card__image" asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">
+                                    <img src="@(product.ImageUrl ?? "/images/default-product.jpg")" alt="@product.Name" loading="lazy" />
+                                    @if (product.Stock <= 5 && product.Stock > 0)
+                                    {
+                                        <span class="product-card__badge">Últimas unidades</span>
+                                    }
+                                    @if (product.Stock == 0)
+                                    {
+                                        <span class="product-card__badge product-card__badge--out">Agotado</span>
+                                    }
+                                </a>
+                                <div class="product-card__body">
+                                    @if (!string.IsNullOrEmpty(product.Category))
+                                    {
+                                        <span class="product-card__chip">@(titles.ContainsKey(product.Category) ? titles[product.Category] : product.Category)</span>
+                                    }
+                                    <a class="product-card__name" asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">@product.Name</a>
+                                    <span class="product-card__price">Bs @product.Price.ToString("N2")</span>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </section>
+            }
+        }
+    </main>
+
+    <footer class="hp-contact" id="contacto">
+        <div class="hp-contact__bottom" style="margin-top:0;border-top:0;padding-top:0;">
+            <span>&copy; @DateTime.Now.Year IMAGEN. Todos los derechos reservados.</span>
+            <a asp-controller="Home" asp-action="Index">Volver al inicio</a>
+        </div>
+    </footer>
+
+</body>
+</html>

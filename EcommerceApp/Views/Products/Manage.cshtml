@@ -1,0 +1,80 @@
+@model List<EcommerceApp.Models.Product>
+@{
+    Layout = null;
+    ViewData["Title"] = "Gestionar catálogo";
+    ViewData["AdminTitle"] = "Gestionar catálogo";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-page">
+    <div class="bg-grid"></div>
+
+    <partial name="_AdminHeader" />
+
+    <main class="admin-main">
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="admin-alert">@TempData["Mensaje"]</div>
+        }
+
+        <section class="admin-panel">
+            <div class="admin-panel__head">
+                <h2>Todos los productos (@Model.Count)</h2>
+                <a class="btn-admin-red" asp-controller="Products" asp-action="Create">+ Nuevo producto</a>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <p class="admin-empty">Todavía no registraste ningún producto. <a asp-controller="Products" asp-action="Create">Crea el primero</a>.</p>
+            }
+            else
+            {
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Actualizado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <img class="admin-table__thumb" src="@(product.ImageUrl ?? "/images/default-product.jpg")" alt="@product.Name" />
+                                </td>
+                                <td>@product.Name</td>
+                                <td>@(product.Category ?? "—")</td>
+                                <td>Bs @product.Price.ToString("N2")</td>
+                                <td>
+                                    <span class="stock-pill @(product.Stock <= 5 ? "stock-pill--low" : "")">
+                                        @product.Stock
+                                    </span>
+                                </td>
+                                <td>@((product.UpdatedAt ?? product.CreatedAt).ToString("dd/MM/yyyy"))</td>
+                                <td class="admin-table__actions">
+                                    <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id">Editar</a>
+                                    <a asp-controller="Products" asp-action="Preview" asp-route-id="@product.Id">Ver</a>
+                                    <a asp-controller="Products" asp-action="Delete" asp-route-id="@product.Id" class="admin-table__delete">Eliminar</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,210 @@
+@model EcommerceApp.Models.Product
+@{
+    Layout = null;
+    ViewData["Title"] = Model.Name;
+    var stockLabel = Model.Stock == 0 ? "Agotado" : Model.Stock <= 5 ? $"Últimas {Model.Stock} unidades" : "En stock";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/product-detail.css" asp-append-version="true" />
+</head>
+<body class="home-page catalog-page">
+
+    <partial name="_SiteHeader" />
+
+    <div class="catalog-crumb">
+        <div class="catalog-crumb__inner">
+            <a asp-controller="Home" asp-action="Index">Inicio</a>
+            <span>/</span>
+            <a asp-controller="Products" asp-action="Index">Catálogo</a>
+            @if (!string.IsNullOrEmpty(Model.Category))
+            {
+                <span>/</span>
+                <a asp-controller="Products" asp-action="Index" asp-route-category="@Model.Category">@Model.Category</a>
+            }
+            <span>/</span>
+            <span>@Model.Name</span>
+        </div>
+    </div>
+
+    <main class="pd-main">
+        @{
+            var gallery = new List<(string Url, string Label)>();
+            gallery.Add((Model.ImageUrl ?? "/images/default-product.jpg", "modelo"));
+            if (!string.IsNullOrWhiteSpace(Model.ImageUrlFrente)) gallery.Add((Model.ImageUrlFrente!, "frente"));
+            if (!string.IsNullOrWhiteSpace(Model.ImageUrlEspalda)) gallery.Add((Model.ImageUrlEspalda!, "espalda"));
+        }
+        <div class="pd-gallery">
+            <div class="pd-gallery__main">
+                <img src="@gallery[0].Url" alt="@Model.Name" id="pdMainImage" />
+            </div>
+            <div class="pd-gallery__thumbs">
+                @for (int i = 0; i < gallery.Count; i++)
+                {
+                    <button type="button" class="pd-thumb @(i == 0 ? "is-active" : "")" data-thumb>
+                        <img src="@gallery[i].Url" alt="@Model.Name — @gallery[i].Label" />
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="pd-info">
+            <h1>@Model.Name</h1>
+            <div class="pd-price">Bs @Model.Price.ToString("N2")</div>
+
+            <span class="pd-stock @(Model.Stock == 0 ? "pd-stock--out" : Model.Stock <= 5 ? "pd-stock--low" : "")">
+                @stockLabel
+            </span>
+
+            <p class="pd-description">@Model.Description</p>
+
+            @{
+                var tallasProducto = (Model.Tallas ?? "")
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            }
+            @if (tallasProducto.Length > 0)
+            {
+                <div class="pd-sizes">
+                    <span class="pd-form__label">Talla</span>
+                    <div class="pd-sizes__options">
+                        @foreach (var talla in tallasProducto)
+                        {
+                            <button type="button" class="pd-size-btn" data-size-btn>@talla</button>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.Genero == "Masculino" || Model.Genero == "Femenino")
+            {
+                <div class="pd-sizes">
+                    <span class="pd-form__label">Género</span>
+                    <div class="pd-sizes__options">
+                        <button type="button" class="pd-size-btn @(Model.Genero == "Masculino" ? "is-selected" : "")" data-gender-btn>Masculino</button>
+                        <button type="button" class="pd-size-btn @(Model.Genero == "Femenino" ? "is-selected" : "")" data-gender-btn>Femenino</button>
+                    </div>
+                </div>
+            }
+            else if (Model.Genero == "Unisex")
+            {
+                <div class="pd-sizes">
+                    <span class="pd-form__label">Género</span>
+                    <div class="pd-sizes__options">
+                        <button type="button" class="pd-size-btn" data-gender-btn>Masculino</button>
+                        <button type="button" class="pd-size-btn" data-gender-btn>Femenino</button>
+                    </div>
+                </div>
+            }
+
+            <form class="pd-form" asp-controller="Cart" asp-action="Add" method="post" data-add-to-cart data-max-stock="@Model.Stock" data-requires-size="@(tallasProducto.Length > 0 ? "true" : "false")">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <input type="hidden" name="talla" data-talla-input value="" />
+                <input type="hidden" name="genero" data-genero-input value="@(Model.Genero == "Unisex" ? "" : Model.Genero)" />
+
+                <label class="pd-form__label">Cantidad</label>
+                <div class="qty-stepper qty-stepper--lg">
+                    <button type="button" class="qty-stepper__btn" data-qty-minus aria-label="Restar">−</button>
+                    <input type="number" name="quantity" class="qty-stepper__input" value="1" min="1" max="@(Model.Stock > 0 ? Model.Stock : 1)" data-qty-input />
+                    <button type="button" class="qty-stepper__btn" data-qty-plus aria-label="Sumar">+</button>
+                </div>
+
+                <button type="submit" class="btn-add-cart btn-add-cart--lg" @(Model.Stock == 0 ? "disabled" : "")>
+                    @(Model.Stock == 0 ? "Agotado" : "Añadir al carrito")
+                </button>
+            </form>
+
+            <button type="button" class="pd-wishlist">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.35-9.5-8.5C.9 9.4 2.4 6 5.6 6c1.9 0 3.3 1 4.4 2.6C11.1 7 12.5 6 14.4 6c3.2 0 4.7 3.4 3.1 6.5C19 16.65 12 21 12 21z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                Añadir a la lista de deseos
+            </button>
+
+            <dl class="pd-meta">
+                <div><dt>SKU</dt><dd>PRD-@Model.Id.ToString("D4")</dd></div>
+                <div><dt>Categoría</dt><dd>@(Model.Category ?? "—")</dd></div>
+                <div><dt>Agregado</dt><dd>@Model.CreatedAt.ToString("dd/MM/yyyy")</dd></div>
+            </dl>
+
+            <div class="pd-share">
+                <span>Compartir:</span>
+                <a href="https://www.facebook.com/sharer/sharer.php" target="_blank" rel="noopener" aria-label="Compartir en Facebook">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5H16l.4-3H13.5V8.4c0-.87.24-1.46 1.5-1.46H16.5V4.34C16.06 4.28 14.9 4.18 13.5 4.18c-2.8 0-4.5 1.4-4.5 4.06V10.5H6.6v3H9v7.5h4.5z"/></svg>
+                </a>
+                <a href="https://wa.me/?text=Mira%20este%20producto" target="_blank" rel="noopener" aria-label="Compartir en WhatsApp">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.4 14.3c-.2.6-1.3 1.2-1.8 1.2-.5.1-1.1.1-1.7-.1-.4-.1-1-.3-1.6-.6-2.9-1.2-4.8-4.1-5-4.3-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.1.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.1-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.7.8c.2.1.3.2.3.3.1.2.1.7-.1 1.2z"/></svg>
+                </a>
+            </div>
+
+            <a asp-controller="Products" asp-action="Index" class="pd-back">← Volver al catálogo</a>
+        </div>
+    </main>
+
+    <footer class="hp-contact" id="contacto">
+        <div class="hp-contact__bottom" style="margin-top:0;border-top:0;padding-top:0;">
+            <span>&copy; @DateTime.Now.Year IMAGEN. Todos los derechos reservados.</span>
+            <a asp-controller="Home" asp-action="Index">Volver al inicio</a>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('[data-size-btn]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-size-btn]').forEach(function (b) { b.classList.remove('is-selected'); });
+                btn.classList.add('is-selected');
+                var tallaInput = document.querySelector('[data-talla-input]');
+                if (tallaInput) tallaInput.value = btn.textContent.trim();
+            });
+        });
+
+        document.querySelectorAll('[data-gender-btn]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-gender-btn]').forEach(function (b) { b.classList.remove('is-selected'); });
+                btn.classList.add('is-selected');
+                var generoInput = document.querySelector('[data-genero-input]');
+                if (generoInput) generoInput.value = btn.textContent.trim();
+            });
+        });
+
+        document.querySelectorAll('[data-thumb]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-thumb]').forEach(function (b) { b.classList.remove('is-active'); });
+                btn.classList.add('is-active');
+                document.getElementById('pdMainImage').src = btn.querySelector('img').src;
+            });
+        });
+
+        document.querySelectorAll('[data-add-to-cart]').forEach(function (form) {
+            var input = form.querySelector('[data-qty-input]');
+            var minus = form.querySelector('[data-qty-minus]');
+            var plus = form.querySelector('[data-qty-plus]');
+            var max = parseInt(form.dataset.maxStock || '1', 10);
+
+            minus.addEventListener('click', function () {
+                var val = Math.max(1, parseInt(input.value || '1', 10) - 1);
+                input.value = val;
+            });
+            plus.addEventListener('click', function () {
+                var val = Math.min(max, parseInt(input.value || '1', 10) + 1);
+                input.value = val;
+            });
+
+            form.addEventListener('submit', function (e) {
+                if (form.dataset.requiresSize === 'true') {
+                    var tallaInput = form.querySelector('[data-talla-input]');
+                    if (!tallaInput.value) {
+                        e.preventDefault();
+                        alert('Por favor selecciona una talla antes de añadir al carrito.');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

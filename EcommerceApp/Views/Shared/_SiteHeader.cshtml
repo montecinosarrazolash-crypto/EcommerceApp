@@ -1,0 +1,72 @@
+@using Microsoft.EntityFrameworkCore
+@inject EcommerceApp.Data.ApplicationDbContext DbContext
+@{
+    var cartCount = 0;
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId != null)
+        {
+            cartCount = await DbContext.OrderItems
+                .Where(i => i.Order!.UserId == userId && i.Order.Status == "Carrito")
+                .SumAsync(i => (int?)i.Quantity) ?? 0;
+        }
+    }
+}
+<header class="hp-header">
+    <div class="hp-header__bar">
+        <a asp-controller="Home" asp-action="Index" class="wordmark">IMAGEN</a>
+
+        <button class="hp-nav-toggle" type="button" id="hpNavToggle" aria-expanded="false" aria-controls="hpNav" aria-label="Abrir menú">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+
+        <ul class="hp-nav" id="hpNav">
+            <li><a asp-controller="Products" asp-action="Index" asp-route-category="Voley">Vóley</a></li>
+            <li><a asp-controller="Products" asp-action="Index" asp-route-category="Futbol">Fútbol</a></li>
+            <li><a asp-controller="Products" asp-action="Index" asp-route-category="Basquetbol">Basquetbol</a></li>
+            <li><a asp-controller="Home" asp-action="Index" asp-fragment="personalizados">Personalizados</a></li>
+            <li><a asp-controller="Home" asp-action="Index" asp-fragment="serigrafiado">Serigrafiado</a></li>
+            <li><a asp-controller="Home" asp-action="Index" asp-fragment="contacto">Contacto</a></li>
+        </ul>
+
+        <div class="hp-header__actions">
+            <a class="hp-icon-link" href="#" aria-label="Buscar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </a>
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <a class="hp-icon-link" asp-controller="Orders" asp-action="Index" aria-label="Mis pedidos" title="Mis pedidos">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h16l-1.5 12.5a2 2 0 01-2 1.5H7.5a2 2 0 01-2-1.5L4 7z" stroke="currentColor" stroke-width="1.8"/><path d="M8 7V5a4 4 0 018 0v2" stroke="currentColor" stroke-width="1.8"/></svg>
+                </a>
+                <a class="hp-icon-link hp-cart-link" asp-controller="Cart" asp-action="Index" aria-label="Carrito">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="20" r="1.4" fill="currentColor"/><circle cx="18" cy="20" r="1.4" fill="currentColor"/><path d="M2.5 3h2l2.2 12.1a2 2 0 002 1.6h8.4a2 2 0 002-1.6L21 7H6" stroke="currentColor" stroke-width="1.8"/></svg>
+                    @if (cartCount > 0)
+                    {
+                        <span class="hp-cart-badge">@cartCount</span>
+                    }
+                </a>
+                <span class="hp-user">Hola, @User.Identity.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="hp-logout-form">
+                    <button type="submit" class="hp-cta">Cerrar sesión</button>
+                </form>
+            }
+            else
+            {
+                <a class="hp-cta" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+            }
+        </div>
+    </div>
+</header>
+<script>
+    (function () {
+        var toggle = document.getElementById('hpNavToggle');
+        var nav = document.getElementById('hpNav');
+        if (toggle && nav) {
+            toggle.addEventListener('click', function () {
+                var open = nav.classList.toggle('is-open');
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+        }
+    })();
+</script>

@@ -1,0 +1,105 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Inicio";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+</head>
+<body class="home-page">
+
+    <partial name="_SiteHeader" />
+
+    <section class="hp-hero">
+        <img class="hp-hero__banner" src="~/images/hero-banner.png" alt="Imagen — expertos en confección textil" />
+        <div class="hp-hero__actions">
+            <a class="btn-solid" asp-controller="Products" asp-action="Index">Ver catálogo</a>
+            <a class="btn-outline" href="#personalizados">Cotiza tu equipo</a>
+        </div>
+    </section>
+
+    <section class="hp-section">
+        <div class="hp-section__head">
+            <h2>Nuestras líneas</h2>
+            <p>Cada disciplina tiene su propio corte, tela y ajuste. Elige la tuya.</p>
+        </div>
+        <div class="hp-categories">
+            <a class="hp-cat-card" asp-controller="Products" asp-action="Index" asp-route-category="Voley">
+                <svg class="hp-cat-card__icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 3c3 3 3 15 0 18M4 8c3.5 2 12.5 2 16 0M4 16c3.5-2 12.5-2 16 0" stroke="currentColor" stroke-width="1.4"/></svg>
+                <h3>Vóley</h3>
+                <p>Camisetas y shorts de corte ágil para juego y entrenamiento.</p>
+                <span class="hp-cat-card__link">Ver colección</span>
+            </a>
+            <a class="hp-cat-card" asp-controller="Products" asp-action="Index" asp-route-category="Futbol">
+                <svg class="hp-cat-card__icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z" stroke="currentColor" stroke-width="1.4"/><path d="M12 3v4M4.5 9l2.5 1M19.5 9l-2.5 1M8.5 20l1-4.5M15.5 20l-1-4.5" stroke="currentColor" stroke-width="1.2"/></svg>
+                <h3>Fútbol</h3>
+                <p>Camisetas de juego transpirables, listas para estampar.</p>
+                <span class="hp-cat-card__link">Ver colección</span>
+            </a>
+            <a class="hp-cat-card" asp-controller="Products" asp-action="Index" asp-route-category="Basquetbol">
+                <svg class="hp-cat-card__icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v18M3 12h18M5.5 5.5c4 3 9 3 13 0M5.5 18.5c4-3 9-3 13 0" stroke="currentColor" stroke-width="1.4"/></svg>
+                <h3>Basquetbol</h3>
+                <p>Camisetas sin mangas y shorts con tela de secado rápido.</p>
+                <span class="hp-cat-card__link">Ver colección</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="hp-section hp-services">
+        <div class="hp-section__head">
+            <h2>Personalizados y serigrafiado</h2>
+            <p>Del diseño a la prenda terminada, todo bajo un mismo techo.</p>
+        </div>
+        <div class="hp-service-grid">
+            <div class="hp-service-card" id="personalizados">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 20l3-1 11-11-2-2L5 17z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 6l2 2" stroke="currentColor" stroke-width="1.6"/></svg>
+                <h3>Personalizados</h3>
+                <p>Nombres, números, escudos y colores de tu equipo aplicados a cada prenda, en cualquier cantidad.</p>
+                <a href="#contacto">Solicitar cotización</a>
+            </div>
+            <div class="hp-service-card" id="serigrafiado">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M4 15l4-4 4 4 3-3 5 5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                <h3>Serigrafiado</h3>
+                <p>Estampado profesional de alta durabilidad para diseños, auspiciadores y numeración de equipos.</p>
+                <a href="#contacto">Solicitar cotización</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="hp-contact" id="contacto">
+        <div class="hp-contact__inner">
+            <div class="hp-contact__brand">
+                <span class="wordmark">IMAGEN</span>
+                <p>Confección textil deportiva: diseño, telas premium, acabados profesionales y producción personalizada para tu equipo.</p>
+            </div>
+            <div>
+                <h4>Catálogo</h4>
+                <ul>
+                    <li><a asp-controller="Products" asp-action="Index" asp-route-category="Voley">Vóley</a></li>
+                    <li><a asp-controller="Products" asp-action="Index" asp-route-category="Futbol">Fútbol</a></li>
+                    <li><a asp-controller="Products" asp-action="Index" asp-route-category="Basquetbol">Basquetbol</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contacto</h4>
+                <ul>
+                    <li><a href="mailto:contacto@imagen.com">contacto@imagen.com</a></li>
+                    <li><a href="tel:+59170045123">+591 700 45123</a></li>
+                    <li>Escríbenos por WhatsApp</li>
+                </ul>
+            </div>
+        </div>
+        <div class="hp-contact__bottom">
+            <span>&copy; @DateTime.Now.Year IMAGEN. Todos los derechos reservados.</span>
+            <a asp-controller="Home" asp-action="Privacy">Privacidad</a>
+        </div>
+    </footer>
+
+</body>
+</html>

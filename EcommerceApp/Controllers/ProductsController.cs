@@ -1,0 +1,202 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using EcommerceApp.Data;
+using EcommerceApp.Models;
+
+namespace EcommerceApp.Controllers
+{
+    // Constructor primario: "context" reemplaza el campo _context de antes.
+    [Authorize]
+    public class ProductsController(ApplicationDbContext context, IWebHostEnvironment env) : Controller
+    {
+        // Guarda un archivo subido dentro de wwwroot/images/productos con un
+        // nombre único, y devuelve la ruta web (ej: /images/productos/xxxx.jpg)
+        // lista para guardar en el campo ImageUrl. Si no se subió archivo,
+        // devuelve null (y se conserva lo que ya había).
+        private async Task<string?> GuardarImagenAsync(IFormFile? archivo)
+        {
+            if (archivo == null || archivo.Length == 0) return null;
+
+            var carpeta = Path.Combine(env.WebRootPath, "images", "productos");
+            Directory.CreateDirectory(carpeta);
+
+            var extension = Path.GetExtension(archivo.FileName);
+            var nombreArchivo = $"{Guid.NewGuid()}{extension}";
+            var rutaFisica = Path.Combine(carpeta, nombreArchivo);
+
+            using (var stream = new FileStream(rutaFisica, FileMode.Create))
+            {
+                await archivo.CopyToAsync(stream);
+            }
+
+            return $"/images/productos/{nombreArchivo}";
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(string? category)
+        {
+            var allProducts = await context.Products.AsNoTracking().ToListAsync();
+
+            var viewModel = new ProductCatalogViewModel { SelectedCategory = category };
+
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                viewModel.Sections.Add(new CategorySectionViewModel
+                {
+                    Category = category,
+                    Products = allProducts
+                        .Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase))
+                        .Take(8)
+                        .ToList()
+                });
+            }
+            else
+            {
+                var categoriesInOrder = new[] { "Voley", "Futbol", "Basquetbol" };
+
+                foreach (var cat in categoriesInOrder)
+                {
+                    var productsInCategory = allProducts
+                        .Where(p => string.Equals(p.Category, cat, StringComparison.OrdinalIgnoreCase))
+                        .Take(8)
+                        .ToList();
+                    if (productsInCategory.Count > 0)
+                        viewModel.Sections.Add(new CategorySectionViewModel { Category = cat, Products = productsInCategory });
+                }
+
+                var otherProducts = allProducts
+                    .Where(p => string.IsNullOrEmpty(p.Category) || !categoriesInOrder.Any(c => string.Equals(c, p.Category, StringComparison.OrdinalIgnoreCase)))
+                    .Take(8)
+                    .ToList();
+                if (otherProducts.Count > 0)
+                    viewModel.Sections.Add(new CategorySectionViewModel { Category = "Otros", Products = otherProducts });
+            }
+
+            return View(viewModel);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Manage()
+        {
+            var products = await context.Products
+                .AsNoTracking()
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            return View(products);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Preview(int id)
+        {
+            var product = await context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+            return View(product);
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> Details(int id)
+        {
+            var product = await context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+            return View(product);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult Create() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(Product product, IFormFile? ArchivoPrincipal, IFormFile? ArchivoFrente, IFormFile? ArchivoEspalda, string[]? TallasSeleccionadas)
+        {
+            if (!ModelState.IsValid) return View(product);
+
+            product.Tallas = TallasSeleccionadas != null && TallasSeleccionadas.Length > 0
+                ? string.Join(",", TallasSeleccionadas)
+                : null;
+
+            var urlPrincipal = await GuardarImagenAsync(ArchivoPrincipal);
+            if (urlPrincipal != null) product.ImageUrl = urlPrincipal;
+
+            var urlFrente = await GuardarImagenAsync(ArchivoFrente);
+            if (urlFrente != null) product.ImageUrlFrente = urlFrente;
+
+            var urlEspalda = await GuardarImagenAsync(ArchivoEspalda);
+            if (urlEspalda != null) product.ImageUrlEspalda = urlEspalda;
+
+            context.Products.Add(product);
+            await context.SaveChangesAsync();
+            return RedirectToAction(nameof(Manage));
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var product = await context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+            return View(product);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile? ArchivoPrincipal, IFormFile? ArchivoFrente, IFormFile? ArchivoEspalda, string[]? TallasSeleccionadas)
+        {
+            if (id != product.Id) return NotFound();
+            if (!ModelState.IsValid) return View(product);
+
+            product.Tallas = TallasSeleccionadas != null && TallasSeleccionadas.Length > 0
+                ? string.Join(",", TallasSeleccionadas)
+                : null;
+
+            // No confiamos en el CreatedAt que viene del formulario (pierde el
+            // "Kind" UTC al pasar por HTML y Postgres lo rechaza). Lo traemos
+            // directo de la base de datos.
+            var createdAt = await context.Products
+                .AsNoTracking()
+                .Where(p => p.Id == id)
+                .Select(p => p.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            product.CreatedAt = DateTime.SpecifyKind(createdAt, DateTimeKind.Utc);
+            product.UpdatedAt = DateTime.UtcNow;
+
+            var urlPrincipal = await GuardarImagenAsync(ArchivoPrincipal);
+            if (urlPrincipal != null) product.ImageUrl = urlPrincipal;
+
+            var urlFrente = await GuardarImagenAsync(ArchivoFrente);
+            if (urlFrente != null) product.ImageUrlFrente = urlFrente;
+
+            var urlEspalda = await GuardarImagenAsync(ArchivoEspalda);
+            if (urlEspalda != null) product.ImageUrlEspalda = urlEspalda;
+
+            context.Products.Update(product);
+            await context.SaveChangesAsync();
+            return RedirectToAction(nameof(Manage));
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var product = await context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+            return View(product);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var product = await context.Products.FindAsync(id);
+            if (product != null)
+            {
+                context.Products.Remove(product);
+                await context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Manage));
+        }
+    }
+}

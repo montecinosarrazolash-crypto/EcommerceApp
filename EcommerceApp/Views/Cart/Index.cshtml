@@ -1,0 +1,94 @@
+@model EcommerceApp.Models.Order
+@{
+    Layout = null;
+    ViewData["Title"] = "Tu carrito";
+    var total = Model.Items.Sum(i => i.UnitPrice * i.Quantity);
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+</head>
+<body class="home-page catalog-page">
+
+    <partial name="_SiteHeader" />
+
+    <div class="catalog-crumb">
+        <div class="catalog-crumb__inner">
+            <a asp-controller="Home" asp-action="Index">Inicio</a>
+            <span>/</span>
+            <span>Tu carrito</span>
+        </div>
+    </div>
+
+    <main class="cart-main">
+        <h1 class="cart-title">Tu carrito</h1>
+
+        @if (!Model.Items.Any())
+        {
+            <div class="catalog-empty">
+                <h2>Tu carrito está vacío</h2>
+                <p>Explora el catálogo y agrega algún producto.</p>
+                <a class="btn-solid" asp-controller="Products" asp-action="Index">Ver catálogo</a>
+            </div>
+        }
+        else
+        {
+            <div class="cart-layout">
+                <div class="cart-items">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="cart-item">
+                            <img class="cart-item__image" src="@(item.Product?.ImageUrl ?? "/images/default-product.jpg")" alt="@item.ProductName" />
+
+                            <div class="cart-item__info">
+                                <a class="cart-item__name" asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId">@item.ProductName</a>
+                                <div class="cart-item__meta">
+                                    @if (!string.IsNullOrWhiteSpace(item.Talla)) { <span>Talla: <strong>@item.Talla</strong></span> }
+                                    @if (!string.IsNullOrWhiteSpace(item.Genero)) { <span>Género: <strong>@item.Genero</strong></span> }
+                                </div>
+                                <span class="cart-item__price">Bs @item.UnitPrice.ToString("N2")</span>
+                            </div>
+
+                            <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="cart-item__qty-form">
+                                <input type="hidden" name="itemId" value="@item.Id" />
+                                <div class="qty-stepper">
+                                    <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="qty-stepper__btn" aria-label="Restar">−</button>
+                                    <input type="number" class="qty-stepper__input" value="@item.Quantity" readonly />
+                                    <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="qty-stepper__btn" aria-label="Sumar">+</button>
+                                </div>
+                            </form>
+
+                            <span class="cart-item__subtotal">Bs @((item.UnitPrice * item.Quantity).ToString("N2"))</span>
+
+                            <form asp-controller="Cart" asp-action="Remove" method="post">
+                                <input type="hidden" name="itemId" value="@item.Id" />
+                                <button type="submit" class="cart-item__remove" aria-label="Quitar">✕</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+
+                <div class="cart-summary">
+                    <h2>Resumen</h2>
+                    <div class="cart-summary__row">
+                        <span>Total (@Model.Items.Sum(i => i.Quantity) unidad(es))</span>
+                        <strong>Bs @total.ToString("N2")</strong>
+                    </div>
+                    <form asp-controller="Cart" asp-action="Checkout" method="post">
+                        <button type="submit" class="btn-solid cart-checkout-btn">Confirmar pedido</button>
+                    </form>
+                    <a asp-controller="Products" asp-action="Index" class="cart-continue">← Seguir comprando</a>
+                </div>
+            </div>
+        }
+    </main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+@model EcommerceApp.Models.Product
+@{
+    Layout = null;
+    ViewData["Title"] = "Eliminar producto";
+    ViewData["AdminTitle"] = "Eliminar producto";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-page">
+    <div class="bg-grid"></div>
+    <partial name="_AdminHeader" />
+
+    <main class="admin-main">
+        <div class="admin-danger-box">
+            <h2>¿Eliminar este producto?</h2>
+            <p style="color:var(--admin-muted); margin-bottom:20px;">Esta acción no se puede deshacer.</p>
+
+            <div class="admin-preview" style="margin-bottom:24px;">
+                <img class="admin-preview__image" src="@(Model.ImageUrl ?? "/images/default-product.jpg")" alt="@Model.Name" />
+                <dl>
+                    <div><dt>Nombre</dt><dd>@Model.Name</dd></div>
+                    <div><dt>Categoría</dt><dd>@(Model.Category ?? "—")</dd></div>
+                    <div><dt>Precio</dt><dd>Bs @Model.Price.ToString("N2")</dd></div>
+                    <div><dt>Stock</dt><dd>@Model.Stock</dd></div>
+                </dl>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="admin-form-actions">
+                    <button type="submit" class="btn-admin-red">Sí, eliminar</button>
+                    <a href="@Url.Action("Manage")" class="btn-admin-outline">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

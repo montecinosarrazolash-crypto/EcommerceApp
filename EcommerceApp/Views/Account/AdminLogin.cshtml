@@ -1,0 +1,169 @@
+@model EcommerceApp.Models.AdminLoginViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acceso Administrador</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: #050505;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(255,20,20,0.14), transparent 55%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: auto, 40px 40px, 40px 40px;
+            pointer-events: none;
+        }
+
+        .login-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 1.1rem;
+            overflow: hidden;
+            background: linear-gradient(180deg, #141414 0%, #0d0d0d 100%);
+            border: 1px solid rgba(255,40,40,0.4);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 45px rgba(255,20,20,0.18);
+        }
+
+        .login-header {
+            position: relative;
+            padding: 1.75rem 1.5rem 1.1rem;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(255,20,20,0.2) 0%, transparent 70%);
+            border-bottom: 1px solid rgba(255,40,40,0.3);
+        }
+        .login-header img {
+            height: 60px;
+            width: auto;
+            filter: drop-shadow(0 0 14px rgba(255,30,30,0.65));
+        }
+        .login-header h3 {
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 0.6rem 0 0.1rem;
+        }
+        .login-header .badge-admin {
+            display: inline-block;
+            margin-top: 0.4rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 1rem;
+            background: rgba(255,20,20,0.15);
+            border: 1px solid rgba(255,40,40,0.5);
+            color: #ff6b6b;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .login-body { padding: 1.75rem 1.75rem 1.5rem; }
+
+        .form-label { color: #d8d8d8; font-size: 0.85rem; font-weight: 600; }
+
+        .input-group-text {
+            background: #1c1c1c;
+            border: 1px solid #2c2c2c;
+            border-right: none;
+            color: #ff4d4d;
+        }
+        .form-control {
+            background: #1c1c1c;
+            border: 1px solid #2c2c2c;
+            border-left: none;
+            color: #f1f1f1;
+        }
+        .form-control::placeholder { color: #6b6b6b; }
+        .form-control:focus {
+            background: #1c1c1c;
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(255,20,20,0.25);
+            border-color: #ff2d2d;
+        }
+        .input-group:focus-within .input-group-text { border-color: #ff2d2d; }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #ff2d2d 0%, #7a0000 100%);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 0.65rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 8px 20px rgba(255,20,20,0.35);
+        }
+        .btn-admin:hover { color: #fff; opacity: 0.92; }
+
+        .login-body a { color: #ff4d4d; }
+        .login-body p { color: #9a9a9a; }
+
+        .alert-danger {
+            background: rgba(255,20,20,0.12);
+            border: 1px solid rgba(255,40,40,0.4);
+            color: #ff8080;
+        }
+        .text-danger { color: #ff5c5c !important; }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="card login-card">
+        <div class="login-header">
+            <img src="~/images/logo.png" alt="Logo" />
+            <h3>ECOMMERCE APP</h3>
+            <span class="badge-admin">PANEL ADMINISTRADOR</span>
+        </div>
+        <div class="login-body">
+            <form asp-action="AdminLogin" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">👤</span>
+                        <input asp-for="Username" class="form-control" placeholder="Usuario administrador" />
+                    </div>
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AdminCode" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">🔑</span>
+                        <input asp-for="AdminCode" class="form-control" placeholder="Código de administrador" />
+                    </div>
+                    <span asp-validation-for="AdminCode" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-admin w-100 mb-2">Ingresar como Administrador</button>
+            </form>
+
+            <p class="text-center mt-3 mb-0">
+                <a asp-action="Login">Volver al inicio de sesión normal</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+@model EcommerceApp.Models.Product
+@{
+    Layout = null;
+    ViewData["Title"] = "Editar producto";
+    ViewData["AdminTitle"] = "Editar producto";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-page">
+    <div class="bg-grid"></div>
+    <partial name="_AdminHeader" />
+
+    <main class="admin-main">
+        <section class="admin-panel">
+            <div class="admin-panel__head">
+                <h2>@Model.Name</h2>
+                <a class="btn-admin-outline" asp-controller="Products" asp-action="Manage">← Volver</a>
+            </div>
+
+            <form asp-action="Edit" method="post" enctype="multipart/form-data" class="admin-form">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="field-error"></div>
+
+                <div class="field">
+                    <label asp-for="Name">Nombre</label>
+                    <input asp-for="Name" />
+                    <span asp-validation-for="Name" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Description">Descripción</label>
+                    <textarea asp-for="Description"></textarea>
+                    <span asp-validation-for="Description" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Price">Precio (Bs)</label>
+                    <input asp-for="Price" />
+                    <span asp-validation-for="Price" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Stock">Stock</label>
+                    <input asp-for="Stock" />
+                    <span asp-validation-for="Stock" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label>Foto principal (modelo puesto)</label>
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <img class="admin-form__preview" src="@Model.ImageUrl" alt="Foto actual" />
+                    }
+                    <input type="file" name="ArchivoPrincipal" accept="image/*" />
+                    <small class="field-hint">o pega un enlace en vez de subir archivo:</small>
+                    <input asp-for="ImageUrl" placeholder="https://..." />
+                </div>
+
+                <div class="field">
+                    <label>Foto de la prenda — frente</label>
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrlFrente))
+                    {
+                        <img class="admin-form__preview" src="@Model.ImageUrlFrente" alt="Foto actual" />
+                    }
+                    <input type="file" name="ArchivoFrente" accept="image/*" />
+                    <small class="field-hint">o pega un enlace en vez de subir archivo:</small>
+                    <input asp-for="ImageUrlFrente" placeholder="https://..." />
+                </div>
+
+                <div class="field">
+                    <label>Foto de la prenda — espalda</label>
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrlEspalda))
+                    {
+                        <img class="admin-form__preview" src="@Model.ImageUrlEspalda" alt="Foto actual" />
+                    }
+                    <input type="file" name="ArchivoEspalda" accept="image/*" />
+                    <small class="field-hint">o pega un enlace en vez de subir archivo:</small>
+                    <input asp-for="ImageUrlEspalda" placeholder="https://..." />
+                </div>
+
+                <div class="field">
+                    <label asp-for="Category">Categoría</label>
+                    <select asp-for="Category">
+                        <option value="">-- Selecciona una categoría --</option>
+                        <option value="Voley">Vóley</option>
+                        <option value="Futbol">Fútbol</option>
+                        <option value="Basquetbol">Basquetbol</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Genero">Género</label>
+                    <select asp-for="Genero">
+                        <option value="">-- Selecciona --</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Unisex">Unisex</option>
+                    </select>
+                </div>
+
+                @{
+                    var tallasActuales = (Model.Tallas ?? "")
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                }
+                <div class="field">
+                    <label>Tallas disponibles</label>
+                    <div class="talla-checks">
+                        @foreach (var talla in new[] { "S", "M", "L", "XL" })
+                        {
+                            <label class="talla-check">
+                                <input type="checkbox" name="TallasSeleccionadas" value="@talla" @(tallasActuales.Contains(talla) ? "checked" : "") />
+                                @talla
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div class="admin-form-actions">
+                    <button type="submit" class="btn-admin-red">Guardar cambios</button>
+                    <a class="btn-admin-outline" asp-controller="Products" asp-action="Manage">Cancelar</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>

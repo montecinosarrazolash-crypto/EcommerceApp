@@ -1,0 +1,85 @@
+@model List<EcommerceApp.Models.Order>
+@{
+    Layout = null;
+    ViewData["Title"] = "Mis pedidos";
+    var estadoLabel = new Dictionary<string, string>
+    {
+        { "Pendiente", "Pendiente" },
+        { "Completado", "Completado" },
+        { "Cancelado", "Cancelado" }
+    };
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IMAGEN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+</head>
+<body class="home-page catalog-page">
+
+    <partial name="_SiteHeader" />
+
+    <div class="catalog-crumb">
+        <div class="catalog-crumb__inner">
+            <a asp-controller="Home" asp-action="Index">Inicio</a>
+            <span>/</span>
+            <span>Mis pedidos</span>
+        </div>
+    </div>
+
+    <main class="cart-main">
+        <h1 class="cart-title">Mis pedidos</h1>
+
+        @if (TempData["OrderMessage"] != null)
+        {
+            <div class="order-success-banner">@TempData["OrderMessage"]</div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="catalog-empty">
+                <h2>Todavía no tienes pedidos</h2>
+                <p>Cuando confirmes tu carrito, aparecerá aquí.</p>
+                <a class="btn-solid" asp-controller="Products" asp-action="Index">Ver catálogo</a>
+            </div>
+        }
+        else
+        {
+            @foreach (var order in Model)
+            {
+                var total = order.Items.Sum(i => i.UnitPrice * i.Quantity);
+                <div class="order-card">
+                    <div class="order-card__head">
+                        <div>
+                            <strong>Pedido #@order.Id.ToString("D5")</strong>
+                            <span class="order-card__date">@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <span class="order-status order-status--@order.Status.ToLower()">@order.Status</span>
+                    </div>
+
+                    <div class="order-card__items">
+                        @foreach (var item in order.Items)
+                        {
+                            <div class="order-card__item">
+                                <span>@item.Quantity× @item.ProductName @(!string.IsNullOrWhiteSpace(item.Talla) ? $"(Talla {item.Talla})" : "")</span>
+                                <span>Bs @((item.UnitPrice * item.Quantity).ToString("N2"))</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="order-card__total">
+                        <span>Total</span>
+                        <strong>Bs @total.ToString("N2")</strong>
+                    </div>
+                </div>
+            }
+        }
+    </main>
+</body>
+</html>
