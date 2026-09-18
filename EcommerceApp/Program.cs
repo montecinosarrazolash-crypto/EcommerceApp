@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EcommerceApp.Data;
 using EcommerceApp.Models;
+using EcommerceApp.Services;
 using System.Globalization;
 
 // Fija el formato de números en todo el sitio (punto decimal, ej: 150.00),
@@ -39,9 +40,16 @@ builder.Services.AddAuthentication()
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
     });
 
+builder.Services.AddHttpClient<SupabaseStorageService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+app.UseForwardedHeaders(new Microsoft.AspNetCore.Builder.ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+        | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+});
 
 app.UseRequestLocalization(new Microsoft.AspNetCore.Builder.RequestLocalizationOptions
 {

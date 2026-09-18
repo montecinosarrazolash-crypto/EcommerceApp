@@ -3,34 +3,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EcommerceApp.Data;
 using EcommerceApp.Models;
+using EcommerceApp.Services;
 
 namespace EcommerceApp.Controllers
 {
     // Constructor primario: "context" reemplaza el campo _context de antes.
     [Authorize]
-    public class ProductsController(ApplicationDbContext context, IWebHostEnvironment env) : Controller
+    public class ProductsController(ApplicationDbContext context, SupabaseStorageService storage) : Controller
     {
-        // Guarda un archivo subido dentro de wwwroot/images/productos con un
-        // nombre único, y devuelve la ruta web (ej: /images/productos/xxxx.jpg)
+        // Sube el archivo a Supabase Storage y devuelve la URL pública,
         // lista para guardar en el campo ImageUrl. Si no se subió archivo,
         // devuelve null (y se conserva lo que ya había).
         private async Task<string?> GuardarImagenAsync(IFormFile? archivo)
         {
             if (archivo == null || archivo.Length == 0) return null;
 
-            var carpeta = Path.Combine(env.WebRootPath, "images", "productos");
-            Directory.CreateDirectory(carpeta);
-
-            var extension = Path.GetExtension(archivo.FileName);
-            var nombreArchivo = $"{Guid.NewGuid()}{extension}";
-            var rutaFisica = Path.Combine(carpeta, nombreArchivo);
-
-            using (var stream = new FileStream(rutaFisica, FileMode.Create))
-            {
-                await archivo.CopyToAsync(stream);
-            }
-
-            return $"/images/productos/{nombreArchivo}";
+            await using var stream = archivo.OpenReadStream();
+            return await storage.UploadAsync(stream, archivo.FileName, archivo.ContentType);
         }
 
         [AllowAnonymous]

@@ -1,0 +1,64 @@
+@model List<(string? Producto, string Campo, string? Url)>
+@{
+    ViewData["Title"] = "Migrar imágenes a Supabase";
+}
+
+<div class="container py-4" style="max-width: 900px;">
+    <h2 class="mb-3">Migrar imágenes a Supabase</h2>
+    <p class="text-muted">
+        Esto sube a la nube (Supabase Storage) cada imagen de producto que todavía esté
+        guardada localmente en tu computadora, y actualiza el catálogo para que apunte a
+        la nueva URL pública. Las imágenes que ya estén en la nube no se tocan.
+    </p>
+
+    @if (TempData["MigracionResultado"] != null)
+    {
+        <div class="alert alert-success">@TempData["MigracionResultado"]</div>
+    }
+    @if (TempData["MigracionErrores"] != null)
+    {
+        <div class="alert alert-warning">
+            <strong>Errores:</strong> @TempData["MigracionErrores"]
+        </div>
+    }
+
+    <div class="alert alert-info">
+        Imágenes locales pendientes de migrar: <strong>@ViewBag.TotalPendientes</strong>
+    </div>
+
+    @if (Model.Count > 0)
+    {
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Campo</th>
+                    <th>Ruta local actual</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Take(30))
+                {
+                    <tr>
+                        <td>@item.Producto</td>
+                        <td>@item.Campo</td>
+                        <td><code>@item.Url</code></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (Model.Count > 30)
+        {
+            <p class="text-muted">...y @(Model.Count - 30) más.</p>
+        }
+
+        <form asp-action="MigrarImagenesConfirmado" method="post"
+              onsubmit="return confirm('Esto va a subir @Model.Count imagen(es) a Supabase y actualizar la base de datos. ¿Continuar?');">
+            <button type="submit" class="btn btn-danger">Migrar ahora</button>
+        </form>
+    }
+    else
+    {
+        <p class="text-success">🎉 No hay imágenes locales pendientes — todo tu catálogo ya está en la nube.</p>
+    }
+</div>
