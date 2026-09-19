@@ -19,7 +19,9 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 10px 0;
             background: #0a0a0a;
             font-family: 'Segoe UI', sans-serif;
         }
@@ -76,13 +78,13 @@
 
         .login-header {
             position: relative;
-            padding: 2rem 1.5rem 1.25rem;
+            padding: 0.9rem 1.5rem 0.6rem;
             text-align: center;
             background: radial-gradient(ellipse at center, rgba(255,20,20,0.18) 0%, transparent 70%);
             border-bottom: 1px solid rgba(255,40,40,0.25);
         }
         .login-header img {
-            height: 78px;
+            height: 42px;
             width: auto;
             filter: drop-shadow(0 0 14px rgba(255,30,30,0.65));
         }
@@ -98,14 +100,15 @@
         }
 
         .login-body {
-            padding: 2rem 1.75rem 1.75rem;
+            padding: 1rem 1.5rem 1rem;
         }
 
         .form-label {
             color: #d8d8d8;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             letter-spacing: 0.3px;
+            margin-bottom: 2px;
         }
 
         .input-group-text {
@@ -163,7 +166,7 @@
             align-items: center;
             text-align: center;
             color: #6b6b6b;
-            margin: 1.25rem 0;
+            margin: 0.55rem 0;
             font-size: 0.8rem;
         }
         .divider::before, .divider::after {
@@ -213,7 +216,7 @@
     <div class="card login-card">
         <div class="login-header">
             <img src="~/images/logo.png" alt="Logo" />
-            <h3>ECOMMERCE APP</h3>
+            <h3>IMAGEN</h3>
             <small>Inicia sesión para continuar</small>
         </div>
         <div class="login-body">
@@ -225,7 +228,7 @@
             <form asp-action="Login" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
-                <div class="mb-3">
+                <div class="mb-1">
                     <label asp-for="Username" class="form-label"></label>
                     <div class="input-group">
                         <span class="input-group-text">👤</span>
@@ -234,7 +237,7 @@
                     <span asp-validation-for="Username" class="text-danger"></span>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-1">
                     <label asp-for="Password" class="form-label"></label>
                     <div class="input-group">
                         <span class="input-group-text">🔒</span>
@@ -243,12 +246,12 @@
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
-                <div class="form-check mb-3">
+                <div class="form-check mb-1">
                     <input asp-for="RememberMe" class="form-check-input" />
                     <label asp-for="RememberMe" class="form-check-label"></label>
                 </div>
 
-                <button type="submit" class="btn btn-login w-100 mb-2">Iniciar Sesión</button>
+                <button type="submit" class="btn btn-login w-100 mb-1">Iniciar Sesión</button>
             </form>
 
             <div class="divider">o</div>
@@ -260,10 +263,9 @@
                 </button>
             </form>
 
-            <p class="text-center mt-3 mb-0">
+            <p class="text-center mt-2 mb-0" style="font-size: 0.85rem;">
                 ¿No tienes cuenta? <a asp-action="Register" class="fw-semibold text-decoration-none">Regístrate</a>
-            </p>
-            <p class="text-center mt-2 mb-0" style="font-size: 0.8rem;">
+                &nbsp;·&nbsp;
                 <a asp-action="AdminLogin">Acceso administrador</a>
             </p>
         </div>

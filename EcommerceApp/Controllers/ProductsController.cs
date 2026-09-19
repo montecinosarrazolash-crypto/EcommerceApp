@@ -25,7 +25,7 @@ namespace EcommerceApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index(string? category)
         {
-            var allProducts = await context.Products.AsNoTracking().ToListAsync();
+            var allProducts = await context.Products.AsNoTracking().Where(p => p.IsActive).ToListAsync();
 
             var viewModel = new ProductCatalogViewModel { SelectedCategory = category };
 
@@ -180,10 +180,38 @@ namespace EcommerceApp.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await context.Products.FindAsync(id);
-            if (product != null)
+            if (product == null) return RedirectToAction(nameof(Manage));
+
+            var tieneVentas = await context.OrderItems.AnyAsync(oi => oi.ProductId == id);
+
+            if (tieneVentas)
+            {
+                // No se puede borrar sin perder el historial de esos pedidos:
+                // lo ocultamos del catálogo en vez de eliminarlo de verdad.
+                product.IsActive = false;
+                context.Products.Update(product);
+                TempData["Mensaje"] = $"\"{product.Name}\" ya tiene pedidos asociados, así que no se puede eliminar por completo. Se ocultó del catálogo.";
+            }
+            else
             {
                 context.Products.Remove(product);
+                TempData["Mensaje"] = $"\"{product.Name}\" se eliminó correctamente.";
+            }
+
+            await context.SaveChangesAsync();
+            return RedirectToAction(nameof(Manage));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Reactivar(int id)
+        {
+            var product = await context.Products.FindAsync(id);
+            if (product != null)
+            {
+                product.IsActive = true;
                 await context.SaveChangesAsync();
+                TempData["Mensaje"] = $"\"{product.Name}\" volvió a estar visible en el catálogo.";
             }
             return RedirectToAction(nameof(Manage));
         }

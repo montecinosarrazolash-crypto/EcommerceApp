@@ -1,38 +1,253 @@
-﻿@model EcommerceApp.Models.RegisterViewModel
-<h2>Registro</h2>
-<form asp-action="Register" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="form-group mb-2">
-        <label asp-for="FullName"></label>
-        <input asp-for="FullName" class="form-control" />
-        <span asp-validation-for="FullName" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label asp-for="Username"></label>
-        <input asp-for="Username" class="form-control" />
-        <span asp-validation-for="Username" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" class="form-control" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-    <div class="form-group mb-2">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Registrarse</button>
-</form>
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+@model EcommerceApp.Models.RegisterViewModel
+@{
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear cuenta</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 24px 0;
+            background: #0a0a0a;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ff1a1a 40%, #ff5050 50%, #ff1a1a 60%, transparent);
+            opacity: 0.55;
+            filter: blur(1px);
+        }
+        body::before {
+            top: 10%;
+            left: -50%;
+            transform: rotate(-35deg);
+            box-shadow: 0 0 20px 2px rgba(255,30,30,0.6);
+        }
+        body::after {
+            bottom: 8%;
+            right: -50%;
+            transform: rotate(-35deg);
+            box-shadow: 0 0 20px 2px rgba(255,30,30,0.6);
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(255,20,20,0.10), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255,20,20,0.12), transparent 40%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: auto, auto, 40px 40px, 40px 40px;
+            pointer-events: none;
+        }
+
+        .register-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 460px;
+            border-radius: 1.1rem;
+            overflow: hidden;
+            background: linear-gradient(180deg, #141414 0%, #0d0d0d 100%);
+            border: 1px solid rgba(255,40,40,0.35);
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.03),
+                0 25px 60px rgba(0,0,0,0.6),
+                0 0 45px rgba(255,20,20,0.15);
+        }
+
+        .register-header {
+            position: relative;
+            padding: 1.75rem 1.5rem 1.1rem;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(255,20,20,0.18) 0%, transparent 70%);
+            border-bottom: 1px solid rgba(255,40,40,0.25);
+        }
+        .register-header img {
+            height: 60px;
+            width: auto;
+            filter: drop-shadow(0 0 14px rgba(255,30,30,0.65));
+        }
+        .register-header h3 {
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 0.6rem 0 0.1rem;
+        }
+        .register-header small { color: #b8b8b8; }
+
+        .register-body { padding: 1.75rem 1.75rem 1.5rem; }
+
+        .form-label {
+            color: #d8d8d8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group-text {
+            background: #1c1c1c;
+            border: 1px solid #2c2c2c;
+            border-right: none;
+            color: #ff4d4d;
+        }
+        .form-control {
+            background: #1c1c1c;
+            border: 1px solid #2c2c2c;
+            border-left: none;
+            color: #f1f1f1;
+        }
+        .form-control::placeholder { color: #6b6b6b; }
+        .form-control:focus {
+            background: #1c1c1c;
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(255,20,20,0.25);
+            border-color: #ff2d2d;
+        }
+        .input-group:focus-within .input-group-text { border-color: #ff2d2d; }
+
+        .field-hint {
+            color: #7a7a7a;
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @@media (max-width: 480px) {
+            .row-2 { grid-template-columns: 1fr; }
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #ff2d2d 0%, #b30000 100%);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 0.65rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 8px 20px rgba(255,20,20,0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-register:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(255,20,20,0.5);
+        }
+
+        .register-body a { color: #ff4d4d; }
+        .register-body p { color: #9a9a9a; }
+
+        .alert-danger {
+            background: rgba(255,20,20,0.12);
+            border: 1px solid rgba(255,40,40,0.4);
+            color: #ff8080;
+        }
+        .text-danger { color: #ff5c5c !important; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="card register-card">
+        <div class="register-header">
+            <img src="~/images/logo.png" alt="Logo" />
+            <h3>IMAGEN</h3>
+            <small>Crea tu cuenta</small>
+        </div>
+        <div class="register-body">
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">🧑</span>
+                        <input asp-for="FullName" class="form-control" placeholder="Tu nombre completo" />
+                    </div>
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div class="row-2 mb-3">
+                    <div>
+                        <label asp-for="Username" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">👤</span>
+                            <input asp-for="Username" class="form-control" placeholder="Sin espacios" />
+                        </div>
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Email" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">📧</span>
+                            <input asp-for="Email" class="form-control" placeholder="correo@ejemplo.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-1">
+                    <label asp-for="Password" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">🔒</span>
+                        <input asp-for="Password" class="form-control" placeholder="••••••••" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <p class="field-hint mb-3">Mínimo 6 caracteres, con al menos una letra y un número.</p>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">🔒</span>
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Repite tu contraseña" />
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Address" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">📍</span>
+                        <input asp-for="Address" class="form-control" placeholder="Opcional" />
+                    </div>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-register w-100 mb-2">Crear cuenta</button>
+
+                <p class="text-center mt-3 mb-0">
+                    ¿Ya tienes cuenta? <a asp-action="Login" class="fw-semibold text-decoration-none">Inicia sesión</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

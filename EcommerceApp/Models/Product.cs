@@ -29,5 +29,10 @@ namespace EcommerceApp.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+
+        // Si un producto ya tiene pedidos asociados, no se puede borrar sin
+        // romper el historial de ventas — en ese caso lo "ocultamos" en vez
+        // de eliminarlo de verdad, apagando este campo.
+        public bool IsActive { get; set; } = true;
     }
 }

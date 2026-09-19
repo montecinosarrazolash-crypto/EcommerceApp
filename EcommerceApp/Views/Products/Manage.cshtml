@@ -51,11 +51,17 @@
                     <tbody>
                         @foreach (var product in Model)
                         {
-                            <tr>
+                            <tr class="@(!product.IsActive ? "admin-row--hidden" : "")">
                                 <td>
                                     <img class="admin-table__thumb" src="@(product.ImageUrl ?? "/images/default-product.jpg")" alt="@product.Name" />
                                 </td>
-                                <td>@product.Name</td>
+                                <td>
+                                    @product.Name
+                                    @if (!product.IsActive)
+                                    {
+                                        <span class="badge-hidden">Oculto</span>
+                                    }
+                                </td>
                                 <td>@(product.Category ?? "—")</td>
                                 <td>Bs @product.Price.ToString("N2")</td>
                                 <td>
@@ -67,7 +73,16 @@
                                 <td class="admin-table__actions">
                                     <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id">Editar</a>
                                     <a asp-controller="Products" asp-action="Preview" asp-route-id="@product.Id">Ver</a>
-                                    <a asp-controller="Products" asp-action="Delete" asp-route-id="@product.Id" class="admin-table__delete">Eliminar</a>
+                                    @if (product.IsActive)
+                                    {
+                                        <a asp-controller="Products" asp-action="Delete" asp-route-id="@product.Id" class="admin-table__delete">Eliminar</a>
+                                    }
+                                    else
+                                    {
+                                        <form asp-controller="Products" asp-action="Reactivar" asp-route-id="@product.Id" method="post" style="display:inline;">
+                                            <button type="submit" class="admin-table__reactivate">Reactivar</button>
+                                        </form>
+                                    }
                                 </td>
                             </tr>
                         }

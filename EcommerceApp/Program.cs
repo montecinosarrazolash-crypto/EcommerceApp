@@ -20,6 +20,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -45,11 +49,20 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-app.UseForwardedHeaders(new Microsoft.AspNetCore.Builder.ForwardedHeadersOptions
+var forwardedHeadersOptions = new Microsoft.AspNetCore.Builder.ForwardedHeadersOptions
 {
     ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
         | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
-});
+};
+// Render (y la mayoría de hosts en la nube) no tiene una IP de proxy fija y
+// conocida de antemano, así que hay que vaciar estas listas para que confíe
+// en el encabezado X-Forwarded-Proto igual. Sin esto, la app cree que sigue
+// recibiendo tráfico por http:// aunque el usuario entre por https://, y eso
+// rompe el login de Google (redirect_uri_mismatch) y otras redirecciones.
+forwardedHeadersOptions.KnownNetworks.Clear();
+forwardedHeadersOptions.KnownProxies.Clear();
+
+app.UseForwardedHeaders(forwardedHeadersOptions);
 
 app.UseRequestLocalization(new Microsoft.AspNetCore.Builder.RequestLocalizationOptions
 {
