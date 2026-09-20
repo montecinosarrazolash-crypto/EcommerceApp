@@ -1,0 +1,48 @@
+@inject IConfiguration Configuration
+@{
+    var whatsapp = Configuration["Contacto:WhatsApp"] ?? "";
+    // 📍 CAMBIA ESTOS 3 DATOS por los reales de tu local:
+    var direccionLocal = "Av. Ejemplo #123, Cochabamba, Bolivia";
+    var direccionMapaQuery = "Av. Ejemplo 123, Cochabamba, Bolivia"; // se usa para el mapa
+    var correoContacto = "contacto@imagen.com";
+}
+<footer class="hp-contact" id="contacto">
+    <div class="hp-contact__inner">
+        <div class="hp-contact__brand">
+            <span class="wordmark">IMAGEN</span>
+            <p>Confección textil deportiva: diseño, telas premium, acabados profesionales y producción personalizada para tu equipo.</p>
+        </div>
+        <div>
+            <h4>Catálogo</h4>
+            <ul>
+                <li><a asp-controller="Products" asp-action="Index" asp-route-category="Voley">Vóley</a></li>
+                <li><a asp-controller="Products" asp-action="Index" asp-route-category="Futbol">Fútbol</a></li>
+                <li><a asp-controller="Products" asp-action="Index" asp-route-category="Basquetbol">Basquetbol</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Contacto</h4>
+            <ul>
+                <li><a href="mailto:@correoContacto">@correoContacto</a></li>
+                @if (!string.IsNullOrWhiteSpace(whatsapp))
+                {
+                    <li><a href="https://wa.me/@whatsapp" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></li>
+                }
+                <li>📍 @direccionLocal</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="hp-contact__map">
+        <iframe
+            src="https://www.google.com/maps?q=@Uri.EscapeDataString(direccionMapaQuery)&output=embed"
+            width="100%" height="240" style="border:0;" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade" title="Ubicación de nuestro local">
+        </iframe>
+    </div>
+
+    <div class="hp-contact__bottom">
+        <span>&copy; @DateTime.Now.Year IMAGEN. Todos los derechos reservados.</span>
+        <a asp-controller="Home" asp-action="Privacy">Privacidad</a>
+    </div>
+</footer>

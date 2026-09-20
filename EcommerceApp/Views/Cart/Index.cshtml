@@ -53,7 +53,13 @@
                                 <div class="cart-item__meta">
                                     @if (!string.IsNullOrWhiteSpace(item.Talla)) { <span>Talla: <strong>@item.Talla</strong></span> }
                                     @if (!string.IsNullOrWhiteSpace(item.Genero)) { <span>Género: <strong>@item.Genero</strong></span> }
+                                    @if (!string.IsNullOrWhiteSpace(item.NombrePersonalizado)) { <span>Nombre: <strong>@item.NombrePersonalizado</strong></span> }
+                                    @if (!string.IsNullOrWhiteSpace(item.NumeroPersonalizado)) { <span>Número: <strong>@item.NumeroPersonalizado</strong></span> }
                                 </div>
+                                @if (!string.IsNullOrWhiteSpace(item.Notas))
+                                {
+                                    <div class="cart-item__notes">📝 @item.Notas</div>
+                                }
                                 <span class="cart-item__price">Bs @item.UnitPrice.ToString("N2")</span>
                             </div>
 
@@ -83,6 +89,14 @@
                         <strong>Bs @total.ToString("N2")</strong>
                     </div>
                     <form asp-controller="Cart" asp-action="Checkout" method="post">
+                        <label class="cart-summary__label" for="telefonoContacto" style="display:block;margin-bottom:6px;">
+                            Tu número de contacto (opcional)
+                        </label>
+                        <input type="tel" id="telefonoContacto" name="telefono" placeholder="Ej: 70123456"
+                               style="width:100%;border:1px solid #d7d8db;border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:0.9rem;" />
+                        <p style="color:var(--steel-dim);font-size:0.78rem;margin:-8px 0 14px;">
+                            Te contactamos por acá cuando tu pedido esté listo.
+                        </p>
                         <button type="submit" class="btn-solid cart-checkout-btn">Confirmar pedido</button>
                     </form>
                     <a asp-controller="Products" asp-action="Index" class="cart-continue">← Seguir comprando</a>
@@ -90,5 +104,7 @@
             </div>
         }
     </main>
+    <partial name="_SiteFooter" />
+
 </body>
 </html>

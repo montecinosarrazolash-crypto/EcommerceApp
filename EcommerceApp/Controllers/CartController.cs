@@ -46,7 +46,9 @@ namespace EcommerceApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(int productId, int quantity, string? talla, string? genero)
+        public async Task<IActionResult> Add(
+            int productId, int quantity, string? talla, string? genero,
+            string? nombrePersonalizado, string? numeroPersonalizado, string? notas)
         {
             var product = await context.Products.FindAsync(productId);
             if (product == null) return NotFound();
@@ -54,11 +56,19 @@ namespace EcommerceApp.Controllers
             quantity = Math.Max(1, quantity);
             talla = string.IsNullOrWhiteSpace(talla) ? null : talla;
             genero = string.IsNullOrWhiteSpace(genero) ? null : genero;
+            nombrePersonalizado = string.IsNullOrWhiteSpace(nombrePersonalizado) ? null : nombrePersonalizado.Trim();
+            numeroPersonalizado = string.IsNullOrWhiteSpace(numeroPersonalizado) ? null : numeroPersonalizado.Trim();
+            notas = string.IsNullOrWhiteSpace(notas) ? null : notas.Trim();
 
             var cart = await GetOrCreateCartAsync();
 
+            // Dos camisetas del mismo producto/talla/género pero con nombre o
+            // número distinto son personalizaciones distintas: no se agrupan.
             var existing = cart.Items.FirstOrDefault(i =>
-                i.ProductId == productId && i.Talla == talla && i.Genero == genero);
+                i.ProductId == productId && i.Talla == talla && i.Genero == genero &&
+                i.NombrePersonalizado == nombrePersonalizado &&
+                i.NumeroPersonalizado == numeroPersonalizado &&
+                i.Notas == notas);
 
             if (existing != null)
             {
@@ -74,7 +84,10 @@ namespace EcommerceApp.Controllers
                     UnitPrice = product.Price,
                     Quantity = quantity,
                     Talla = talla,
-                    Genero = genero
+                    Genero = genero,
+                    NombrePersonalizado = nombrePersonalizado,
+                    NumeroPersonalizado = numeroPersonalizado,
+                    Notas = notas
                 });
             }
 
@@ -120,13 +133,14 @@ namespace EcommerceApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout(string? telefono)
         {
             var cart = await GetOrCreateCartAsync();
             if (!cart.Items.Any()) return RedirectToAction(nameof(Index));
 
             cart.Status = "Pendiente";
             cart.UpdatedAt = DateTime.UtcNow;
+            cart.TelefonoContacto = string.IsNullOrWhiteSpace(telefono) ? null : telefono.Trim();
             await context.SaveChangesAsync();
 
             TempData["OrderMessage"] = "¡Tu pedido fue confirmado! Aquí puedes ver su estado.";

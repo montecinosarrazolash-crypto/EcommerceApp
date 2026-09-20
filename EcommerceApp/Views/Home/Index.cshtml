@@ -1,6 +1,8 @@
+@inject IConfiguration Configuration
 @{
     Layout = null;
     ViewData["Title"] = "Inicio";
+    var whatsapp = Configuration["Contacto:WhatsApp"] ?? "";
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -61,7 +63,7 @@
                 <svg viewBox="0 0 24 24" fill="none"><path d="M4 20l3-1 11-11-2-2L5 17z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 6l2 2" stroke="currentColor" stroke-width="1.6"/></svg>
                 <h3>Personalizados</h3>
                 <p>Nombres, números, escudos y colores de tu equipo aplicados a cada prenda, en cualquier cantidad.</p>
-                <a href="#contacto">Solicitar cotización</a>
+                <a asp-controller="CustomOrders" asp-action="Nuevo">Solicitar pedido personalizado</a>
             </div>
             <div class="hp-service-card" id="serigrafiado">
                 <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M4 15l4-4 4 4 3-3 5 5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
@@ -72,34 +74,7 @@
         </div>
     </section>
 
-    <footer class="hp-contact" id="contacto">
-        <div class="hp-contact__inner">
-            <div class="hp-contact__brand">
-                <span class="wordmark">IMAGEN</span>
-                <p>Confección textil deportiva: diseño, telas premium, acabados profesionales y producción personalizada para tu equipo.</p>
-            </div>
-            <div>
-                <h4>Catálogo</h4>
-                <ul>
-                    <li><a asp-controller="Products" asp-action="Index" asp-route-category="Voley">Vóley</a></li>
-                    <li><a asp-controller="Products" asp-action="Index" asp-route-category="Futbol">Fútbol</a></li>
-                    <li><a asp-controller="Products" asp-action="Index" asp-route-category="Basquetbol">Basquetbol</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4>Contacto</h4>
-                <ul>
-                    <li><a href="mailto:contacto@imagen.com">contacto@imagen.com</a></li>
-                    <li><a href="tel:+59170045123">+591 700 45123</a></li>
-                    <li>Escríbenos por WhatsApp</li>
-                </ul>
-            </div>
-        </div>
-        <div class="hp-contact__bottom">
-            <span>&copy; @DateTime.Now.Year IMAGEN. Todos los derechos reservados.</span>
-            <a asp-controller="Home" asp-action="Privacy">Privacidad</a>
-        </div>
-    </footer>
+    <partial name="_SiteFooter" />
 
 </body>
 </html>

@@ -495,3 +495,15 @@
 .admin-table__reactivate:hover {
   text-decoration: underline;
 }
+
+.action-card__badge {
+  display: inline-block;
+  margin-left: 8px;
+  background: var(--admin-red);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  vertical-align: middle;
+}

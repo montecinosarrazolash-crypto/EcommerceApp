@@ -51,6 +51,30 @@
                 <span class="action-card__icon">☰</span>
                 <span>Gestionar catálogo</span>
             </a>
+            <a class="action-card" asp-controller="Orders" asp-action="Admin">
+                <span class="action-card__icon">🧾</span>
+                <span>
+                    Pedidos
+                    @if (Model.PendingOrders > 0)
+                    {
+                        <span class="action-card__badge">@Model.PendingOrders</span>
+                    }
+                </span>
+            </a>
+            <a class="action-card" asp-controller="CustomOrders" asp-action="Admin">
+                <span class="action-card__icon">🎨</span>
+                <span>
+                    Pedidos personalizados
+                    @if (Model.PendingCustomOrders > 0)
+                    {
+                        <span class="action-card__badge">@Model.PendingCustomOrders</span>
+                    }
+                </span>
+            </a>
+            <a class="action-card" asp-controller="Admin" asp-action="MigrarImagenes">
+                <span class="action-card__icon">☁️</span>
+                <span>Migrar imágenes a Supabase</span>
+            </a>
         </section>
 
         <section class="admin-panel" style="margin-bottom:24px;">

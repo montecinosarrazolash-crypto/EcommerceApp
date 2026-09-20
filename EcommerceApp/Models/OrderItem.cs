@@ -26,5 +26,15 @@ namespace EcommerceApp.Models
 
         public string? Talla { get; set; }
         public string? Genero { get; set; }
+
+        // Personalización de la camiseta (opcional)
+        [MaxLength(30)]
+        public string? NombrePersonalizado { get; set; }
+
+        [MaxLength(10)]
+        public string? NumeroPersonalizado { get; set; }
+
+        [MaxLength(300)]
+        public string? Notas { get; set; }
     }
 }

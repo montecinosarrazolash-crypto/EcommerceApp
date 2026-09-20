@@ -1,7 +1,9 @@
 @model List<EcommerceApp.Models.Order>
+@inject IConfiguration Configuration
 @{
     Layout = null;
     ViewData["Title"] = "Mis pedidos";
+    var whatsapp = Configuration["Contacto:WhatsApp"] ?? "";
     var estadoLabel = new Dictionary<string, string>
     {
         { "Pendiente", "Pendiente" },
@@ -35,6 +37,22 @@
 
     <main class="cart-main">
         <h1 class="cart-title">Mis pedidos</h1>
+        <p style="color:var(--steel-dim); margin-top:-14px; margin-bottom:22px; max-width:640px;">
+            <strong>Pendiente</strong>: lo recibimos y lo estamos preparando ·
+            <strong>Completado</strong>: ya está listo, nos pondremos en contacto contigo para coordinar la entrega ·
+            <strong>Cancelado</strong>: el pedido no siguió adelante.
+            @{
+                var whatsappUrl = string.IsNullOrWhiteSpace(whatsapp) ? null : $"https://wa.me/{whatsapp}";
+            }
+            <p style="color:var(--steel-dim); margin-top:-14px; margin-bottom:22px; max-width:640px;">
+                <strong>Pendiente</strong>: lo recibimos y lo estamos preparando ·
+                <strong>Completado</strong>: ya está listo, nos pondremos en contacto contigo para coordinar la entrega ·
+                <strong>Cancelado</strong>: el pedido no siguió adelante.
+                @if (whatsappUrl != null)
+                {
+                    <text>¿Tienes dudas de un pedido? <a href="@whatsappUrl" target="_blank" rel="noopener" style="color:#25D366;font-weight:700;">Escríbenos por WhatsApp</a>.</text>
+                }
+            </p>
 
         @if (TempData["OrderMessage"] != null)
         {
@@ -66,8 +84,20 @@
                     <div class="order-card__items">
                         @foreach (var item in order.Items)
                         {
+                            var detalles = new List<string>();
+                            if (!string.IsNullOrWhiteSpace(item.Talla)) detalles.Add($"Talla {item.Talla}");
+                            if (!string.IsNullOrWhiteSpace(item.Genero)) detalles.Add(item.Genero!);
+                            if (!string.IsNullOrWhiteSpace(item.NombrePersonalizado)) detalles.Add($"Nombre: {item.NombrePersonalizado}");
+                            if (!string.IsNullOrWhiteSpace(item.NumeroPersonalizado)) detalles.Add($"N° {item.NumeroPersonalizado}");
+                            var detalleTexto = detalles.Count > 0 ? $"({string.Join(", ", detalles)})" : "";
                             <div class="order-card__item">
-                                <span>@item.Quantity× @item.ProductName @(!string.IsNullOrWhiteSpace(item.Talla) ? $"(Talla {item.Talla})" : "")</span>
+                                <span>
+                                    @item.Quantity× @item.ProductName @detalleTexto
+                                    @if (!string.IsNullOrWhiteSpace(item.Notas))
+                                    {
+                                        <div class="cart-item__notes">📝 @item.Notas</div>
+                                    }
+                                </span>
                                 <span>Bs @((item.UnitPrice * item.Quantity).ToString("N2"))</span>
                             </div>
                         }
@@ -81,5 +111,7 @@
             }
         }
     </main>
+    <partial name="_SiteFooter" />
+
 </body>
 </html>

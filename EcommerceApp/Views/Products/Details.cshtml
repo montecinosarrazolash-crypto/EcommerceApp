@@ -109,6 +109,22 @@
                 <input type="hidden" name="talla" data-talla-input value="" />
                 <input type="hidden" name="genero" data-genero-input value="@(Model.Genero == "Unisex" ? "" : Model.Genero)" />
 
+                <div class="pd-custom">
+                    <span class="pd-form__label">Personaliza tu camiseta (opcional)</span>
+                    <div class="pd-custom__row">
+                        <div>
+                            <label class="pd-custom__mini-label" for="pdNombre">Nombre</label>
+                            <input type="text" id="pdNombre" name="nombrePersonalizado" maxlength="30" placeholder="Ej: PÉREZ" class="pd-custom__input" />
+                        </div>
+                        <div>
+                            <label class="pd-custom__mini-label" for="pdNumero">Número</label>
+                            <input type="text" id="pdNumero" name="numeroPersonalizado" maxlength="10" placeholder="Ej: 10" class="pd-custom__input" />
+                        </div>
+                    </div>
+                    <label class="pd-custom__mini-label" for="pdNotas">Notas (color, logo, diseño, etc.)</label>
+                    <textarea id="pdNotas" name="notas" maxlength="300" rows="2" placeholder="Cuéntanos cualquier detalle extra que quieras" class="pd-custom__input"></textarea>
+                </div>
+
                 <label class="pd-form__label">Cantidad</label>
                 <div class="qty-stepper qty-stepper--lg">
                     <button type="button" class="qty-stepper__btn" data-qty-minus aria-label="Restar">−</button>
@@ -146,12 +162,7 @@
         </div>
     </main>
 
-    <footer class="hp-contact" id="contacto">
-        <div class="hp-contact__bottom" style="margin-top:0;border-top:0;padding-top:0;">
-            <span>&copy; @DateTime.Now.Year IMAGEN. Todos los derechos reservados.</span>
-            <a asp-controller="Home" asp-action="Index">Volver al inicio</a>
-        </div>
-    </footer>
+    <partial name="_SiteFooter" />
 
     <script>
         document.querySelectorAll('[data-size-btn]').forEach(function (btn) {

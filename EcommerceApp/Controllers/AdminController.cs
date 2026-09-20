@@ -41,6 +41,8 @@ namespace EcommerceApp.Controllers
                 InventoryValue = products.Sum(p => p.Price * p.Stock),
                 LowStockCount = products.Count(p => p.Stock <= 5),
                 TotalUsers = await userManager.Users.CountAsync(),
+                PendingCustomOrders = await context.CustomOrderRequests.CountAsync(p => p.Estado == "Pendiente"),
+                PendingOrders = await context.Orders.CountAsync(o => o.Status == "Pendiente"),
                 RecentProducts = products
                     .OrderByDescending(p => p.CreatedAt)
                     .Take(6)
