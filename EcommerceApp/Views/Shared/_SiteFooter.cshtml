@@ -1,9 +1,11 @@
 @inject IConfiguration Configuration
 @{
     var whatsapp = Configuration["Contacto:WhatsApp"] ?? "";
-    // 📍 CAMBIA ESTOS 3 DATOS por los reales de tu local:
-    var direccionLocal = "Av. Ejemplo #123, Cochabamba, Bolivia";
-    var direccionMapaQuery = "Av. Ejemplo 123, Cochabamba, Bolivia"; // se usa para el mapa
+    // 📍 Ubicación real del local (coordenadas). Si más adelante quieres mostrar
+    // también la dirección en texto (calle, zona), reemplaza direccionLocal.
+    var direccionLocal = "Av.Noel Ken Mercado y Oscar Alfaro,N°014";
+    var latitudLocal = -17.388194;
+    var longitudLocal = -66.215583;
     var correoContacto = "contacto@imagen.com";
 }
 <footer class="hp-contact" id="contacto">
@@ -35,7 +37,7 @@
 
     <div class="hp-contact__map">
         <iframe
-            src="https://www.google.com/maps?q=@Uri.EscapeDataString(direccionMapaQuery)&output=embed"
+            src="https://www.google.com/maps?q=@(latitudLocal.ToString(System.Globalization.CultureInfo.InvariantCulture)),@(longitudLocal.ToString(System.Globalization.CultureInfo.InvariantCulture))&output=embed"
             width="100%" height="240" style="border:0;" allowfullscreen="" loading="lazy"
             referrerpolicy="no-referrer-when-downgrade" title="Ubicación de nuestro local">
         </iframe>
