@@ -59,7 +59,7 @@ var forwardedHeadersOptions = new Microsoft.AspNetCore.Builder.ForwardedHeadersO
 // en el encabezado X-Forwarded-Proto igual. Sin esto, la app cree que sigue
 // recibiendo tráfico por http:// aunque el usuario entre por https://, y eso
 // rompe el login de Google (redirect_uri_mismatch) y otras redirecciones.
-forwardedHeadersOptions.KnownNetworks.Clear();
+forwardedHeadersOptions.KnownIPNetworks.Clear();
 forwardedHeadersOptions.KnownProxies.Clear();
 
 app.UseForwardedHeaders(forwardedHeadersOptions);
@@ -86,7 +86,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Crear la base de datos y las tablas automáticamente si no existen (sin migraciones)
 using (var scope = app.Services.CreateScope())

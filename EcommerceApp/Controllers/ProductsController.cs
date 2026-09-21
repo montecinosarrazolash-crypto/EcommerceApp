@@ -8,7 +8,9 @@ using EcommerceApp.Services;
 namespace EcommerceApp.Controllers
 {
     // Constructor primario: "context" reemplaza el campo _context de antes.
-    [Authorize]
+    // Sin [Authorize] a nivel de clase: cualquiera puede ver el catálogo y
+    // el detalle de un producto sin iniciar sesión. Cada acción de admin
+    // (crear/editar/eliminar/gestionar) tiene su propio [Authorize] abajo.
     public class ProductsController(ApplicationDbContext context, SupabaseStorageService storage) : Controller
     {
         // Sube el archivo a Supabase Storage y devuelve la URL pública,

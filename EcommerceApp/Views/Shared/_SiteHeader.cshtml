@@ -28,6 +28,20 @@
             <li><a asp-controller="CustomOrders" asp-action="Nuevo">Personalizados</a></li>
             <li><a asp-controller="Serigrafiado" asp-action="Nuevo">Serigrafiado</a></li>
             <li><a asp-controller="Home" asp-action="Index" asp-fragment="contacto">Contacto</a></li>
+            <li class="hp-nav__auth">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <span class="hp-user">Hola, @User.Identity.Name</span>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="hp-logout-form">
+                        <button type="submit" class="hp-cta">Cerrar sesión</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="hp-cta" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                    <a class="hp-cta hp-cta--ghost" asp-controller="Account" asp-action="AdminLogin">Iniciar sesión como administrador</a>
+                }
+            </li>
         </ul>
 
         <div class="hp-header__actions">
@@ -54,6 +68,7 @@
             else
             {
                 <a class="hp-cta" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                <a class="hp-cta hp-cta--ghost" asp-controller="Account" asp-action="AdminLogin">Iniciar sesión como administrador</a>
             }
         </div>
     </div>

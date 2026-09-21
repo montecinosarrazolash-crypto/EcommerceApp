@@ -3,15 +3,13 @@
 @{
     Layout = null;
     ViewData["Title"] = "Mis pedidos";
-
     var whatsapp = Configuration["Contacto:WhatsApp"] ?? "";
-    string? whatsappHtml = null;
-    if (!string.IsNullOrWhiteSpace(whatsapp))
+    var estadoLabel = new Dictionary<string, string>
     {
-        var whatsappUrl = $"https://wa.me/{whatsapp}";
-        whatsappHtml = " ¿Tienes dudas de un pedido? "
-            + $"<a href=\"{whatsappUrl}\" target=\"_blank\" rel=\"noopener\" style=\"color:#25D366;font-weight:700;\">Escríbenos por WhatsApp</a>.";
-    }
+        { "Pendiente", "Pendiente" },
+        { "Completado", "Completado" },
+        { "Cancelado", "Cancelado" }
+    };
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -43,9 +41,9 @@
             <strong>Pendiente</strong>: lo recibimos y lo estamos preparando ·
             <strong>Completado</strong>: ya está listo, nos pondremos en contacto contigo para coordinar la entrega ·
             <strong>Cancelado</strong>: el pedido no siguió adelante.
-            @if (whatsappHtml != null)
+            @if (!string.IsNullOrWhiteSpace(whatsapp))
             {
-                @Html.Raw(whatsappHtml)
+                <span> ¿Tienes dudas de un pedido? <a href="https://wa.me/@whatsapp" target="_blank" rel="noopener" style="color:#25D366;font-weight:700;">Escríbenos por WhatsApp</a>.</span>
             }
         </p>
 

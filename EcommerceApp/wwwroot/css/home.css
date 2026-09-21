@@ -129,6 +129,20 @@
   clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
 
+.hp-header__actions a.hp-cta--ghost {
+  background: transparent;
+  border: 1px solid var(--crimson);
+  color: var(--paper);
+  clip-path: none;
+}
+.hp-header__actions a.hp-cta--ghost:hover {
+  background: var(--crimson);
+}
+
+.hp-nav__auth {
+  display: none;
+}
+
 .hp-cart-link { position: relative; }
 
 .hp-cart-badge {
@@ -457,6 +471,19 @@
   .hp-header__actions a.hp-cta,
   .hp-header__actions button.hp-cta { display: none; }
   .hp-user { display: none; }
+
+  .hp-nav__auth {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .hp-nav__auth .hp-user { display: block; color: var(--steel); }
+  .hp-nav__auth .hp-cta,
+  .hp-nav__auth .hp-logout-form .hp-cta { display: inline-block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
