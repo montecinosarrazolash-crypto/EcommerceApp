@@ -71,6 +71,16 @@
                     }
                 </span>
             </a>
+            <a class="action-card" asp-controller="Serigrafiado" asp-action="Admin">
+                <span class="action-card__icon">🖨️</span>
+                <span>
+                    Serigrafía
+                    @if (Model.PendingSerigrafiado > 0)
+                    {
+                        <span class="action-card__badge">@Model.PendingSerigrafiado</span>
+                    }
+                </span>
+            </a>
             <a class="action-card" asp-controller="Admin" asp-action="MigrarImagenes">
                 <span class="action-card__icon">☁️</span>
                 <span>Migrar imágenes a Supabase</span>

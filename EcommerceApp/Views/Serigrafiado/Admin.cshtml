@@ -1,0 +1,135 @@
+@model List<EcommerceApp.Models.SerigrafiadoRequest>
+@{
+    ViewData["Title"] = "Cotizaciones de serigrafía";
+    ViewData["AdminTitle"] = "IMAGEN";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serigrafía — Panel Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <style>
+        .sg-admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .sg-admin-table th {
+            text-align: left; padding: 10px 12px; color: #999; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid #2c2c2c;
+        }
+        .sg-admin-table td { padding: 12px; border-bottom: 1px solid #232323; vertical-align: top; color: #ddd; }
+        .sg-admin-table img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; background: #1c1c1c; }
+        .sg-admin-table .desc { max-width: 280px; }
+        .sg-tag {
+            display: inline-block; background: #1c1c1c; border: 1px solid #2c2c2c;
+            border-radius: 999px; padding: 2px 8px; font-size: 0.72rem; margin: 2px 2px 0 0; color: #ccc;
+        }
+        .sg-status { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+        .sg-status--Pendiente { background: rgba(255,180,0,0.15); color: #ffb400; }
+        .sg-status--Cotizado { background: rgba(80,160,255,0.15); color: #5aa0ff; }
+        .sg-status--Confirmado { background: rgba(160,100,255,0.15); color: #b085ff; }
+        .sg-status--Completado { background: rgba(76,175,80,0.15); color: #4caf50; }
+        .sg-status-form select {
+            background: #1c1c1c; color: #eee; border: 1px solid #2c2c2c; border-radius: 6px;
+            padding: 4px 8px; font-size: 0.82rem; margin-top: 6px;
+        }
+        .sg-whatsapp { display: inline-block; color: #25D366; font-weight: 600; font-size: 0.82rem; text-decoration: none; }
+        .sg-empty { padding: 60px 20px; text-align: center; color: #888; }
+    </style>
+</head>
+<body class="admin-page">
+    <div class="bg-grid"></div>
+
+    <partial name="_AdminHeader" />
+
+    <main class="admin-main">
+        <h1 style="margin-bottom: 6px; color:#fff;">Cotizaciones de serigrafía</h1>
+        <p style="color:#999; margin-bottom: 24px;">Pedidos de estampado que los clientes solicitaron.</p>
+
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="admin-alert">@TempData["Mensaje"]</div>
+        }
+
+        @if (Model.Count == 0)
+        {
+            <div class="sg-empty">Todavía no hay cotizaciones de serigrafía.</div>
+        }
+        else
+        {
+            <div class="admin-panel">
+                <table class="sg-admin-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Cliente</th>
+                            <th>Prendas / Tela</th>
+                            <th>Descripción</th>
+                            <th>Cant.</th>
+                            <th>Contacto</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pedido in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(pedido.ImagenReferenciaUrl))
+                                    {
+                                        <a href="@pedido.ImagenReferenciaUrl" target="_blank" rel="noopener">
+                                            <img src="@pedido.ImagenReferenciaUrl" alt="Referencia" />
+                                        </a>
+                                    }
+                                </td>
+                                <td>
+                                    @(pedido.User?.FullName ?? pedido.User?.UserName ?? "—")<br />
+                                    <small style="color:#888;">@pedido.User?.Email</small>
+                                </td>
+                                <td>
+                                    @foreach (var prenda in pedido.TiposPrenda.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        <span class="sg-tag">@prenda</span>
+                                    }
+                                    <br />
+                                    <small style="color:#888;">Tela: @(pedido.TipoTela ?? "—")</small>
+                                </td>
+                                <td class="desc">@pedido.Descripcion</td>
+                                <td>@pedido.Cantidad</td>
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(pedido.TelefonoContacto))
+                                    {
+                                        <a class="sg-whatsapp" href="https://wa.me/@pedido.TelefonoContacto" target="_blank" rel="noopener">
+                                            📱 @pedido.TelefonoContacto
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#666;">Sin número</span>
+                                    }
+                                </td>
+                                <td>@pedido.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="sg-status sg-status--@pedido.Estado">@pedido.Estado</span>
+                                    <form class="sg-status-form" asp-controller="Serigrafiado" asp-action="CambiarEstado" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@pedido.Id" />
+                                        <select name="estado" onchange="this.form.submit()">
+                                            <option value="Pendiente" selected="@(pedido.Estado == "Pendiente")">Pendiente</option>
+                                            <option value="Cotizado" selected="@(pedido.Estado == "Cotizado")">Cotizado</option>
+                                            <option value="Confirmado" selected="@(pedido.Estado == "Confirmado")">Confirmado</option>
+                                            <option value="Completado" selected="@(pedido.Estado == "Completado")">Completado</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </main>
+</body>
+</html>

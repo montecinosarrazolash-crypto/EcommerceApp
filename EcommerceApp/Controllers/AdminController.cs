@@ -43,6 +43,7 @@ namespace EcommerceApp.Controllers
                 TotalUsers = await userManager.Users.CountAsync(),
                 PendingCustomOrders = await context.CustomOrderRequests.CountAsync(p => p.Estado == "Pendiente"),
                 PendingOrders = await context.Orders.CountAsync(o => o.Status == "Pendiente"),
+                PendingSerigrafiado = await context.SerigrafiadoRequests.CountAsync(s => s.Estado == "Pendiente"),
                 RecentProducts = products
                     .OrderByDescending(p => p.CreatedAt)
                     .Take(6)
