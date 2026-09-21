@@ -259,14 +259,15 @@
             <form asp-action="ExternalLogin" asp-route-provider="Google" method="post">
                 <button type="submit" class="btn btn-google w-100">
                     <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" />
-                    Iniciar sesión con Google
+                    Ingresa automáticamente con Google
                 </button>
             </form>
 
             <p class="text-center mt-2 mb-0" style="font-size: 0.85rem;">
                 ¿No tienes cuenta? <a asp-action="Register" class="fw-semibold text-decoration-none">Regístrate</a>
-                &nbsp;·&nbsp;
-                <a asp-action="AdminLogin">Acceso administrador</a>
+            </p>
+            <p class="text-center mt-2 mb-0" style="font-size: 0.85rem;">
+                <a asp-controller="Home" asp-action="Index">Volver al inicio</a>
             </p>
         </div>
     </div>

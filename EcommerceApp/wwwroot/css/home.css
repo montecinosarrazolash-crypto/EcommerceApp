@@ -143,6 +143,58 @@
   display: none;
 }
 
+.hp-auth-dropdown {
+  position: relative;
+}
+
+.hp-auth-dropdown__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.hp-auth-dropdown__caret {
+  transition: transform 0.15s ease;
+}
+
+.hp-auth-dropdown.is-open .hp-auth-dropdown__caret {
+  transform: rotate(180deg);
+}
+
+.hp-auth-dropdown__menu {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 240px;
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+  z-index: 50;
+  overflow: hidden;
+}
+
+.hp-auth-dropdown.is-open .hp-auth-dropdown__menu {
+  display: flex;
+}
+
+.hp-auth-dropdown__menu a {
+  padding: 12px 16px;
+  color: var(--paper);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.hp-auth-dropdown__menu a:hover,
+.hp-auth-dropdown__menu a:focus-visible {
+  background: var(--panel-2);
+  color: var(--crimson);
+}
+
 .hp-cart-link { position: relative; }
 
 .hp-cart-badge {
@@ -484,6 +536,9 @@
   .hp-nav__auth .hp-user { display: block; color: var(--steel); }
   .hp-nav__auth .hp-cta,
   .hp-nav__auth .hp-logout-form .hp-cta { display: inline-block; }
+  .hp-nav__auth .hp-auth-dropdown { display: block; width: 100%; }
+  .hp-nav__auth .hp-auth-dropdown__toggle { width: 100%; justify-content: space-between; }
+  .hp-nav__auth .hp-auth-dropdown__menu { position: static; box-shadow: none; margin-top: 8px; width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

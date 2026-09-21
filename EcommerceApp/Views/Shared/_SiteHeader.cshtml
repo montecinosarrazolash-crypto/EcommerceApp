@@ -38,16 +38,21 @@
                 }
                 else
                 {
-                    <a class="hp-cta" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
-                    <a class="hp-cta hp-cta--ghost" asp-controller="Account" asp-action="AdminLogin">Iniciar sesión como administrador</a>
+                    <div class="hp-auth-dropdown" data-auth-dropdown>
+                        <button type="button" class="hp-cta hp-auth-dropdown__toggle" data-auth-toggle aria-haspopup="true" aria-expanded="false">
+                            Iniciar sesión
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" class="hp-auth-dropdown__caret"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <div class="hp-auth-dropdown__menu" data-auth-menu>
+                            <a asp-controller="Account" asp-action="Login">Iniciar sesión como cliente</a>
+                            <a asp-controller="Account" asp-action="AdminLogin">Iniciar sesión como administrador</a>
+                        </div>
+                    </div>
                 }
             </li>
         </ul>
 
         <div class="hp-header__actions">
-            <a class="hp-icon-link" href="#" aria-label="Buscar">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            </a>
             @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 <a class="hp-icon-link" asp-controller="Orders" asp-action="Index" aria-label="Mis pedidos" title="Mis pedidos">
@@ -67,8 +72,16 @@
             }
             else
             {
-                <a class="hp-cta" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
-                <a class="hp-cta hp-cta--ghost" asp-controller="Account" asp-action="AdminLogin">Iniciar sesión como administrador</a>
+                <div class="hp-auth-dropdown" data-auth-dropdown>
+                    <button type="button" class="hp-cta hp-auth-dropdown__toggle" data-auth-toggle aria-haspopup="true" aria-expanded="false">
+                        Iniciar sesión
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" class="hp-auth-dropdown__caret"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div class="hp-auth-dropdown__menu" data-auth-menu>
+                        <a asp-controller="Account" asp-action="Login">Iniciar sesión como cliente</a>
+                        <a asp-controller="Account" asp-action="AdminLogin">Iniciar sesión como administrador</a>
+                    </div>
+                </div>
             }
         </div>
     </div>
@@ -83,5 +96,23 @@
                 toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
             });
         }
+
+        document.querySelectorAll('[data-auth-dropdown]').forEach(function (dropdown) {
+            var authToggle = dropdown.querySelector('[data-auth-toggle]');
+            if (!authToggle) return;
+            authToggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var open = dropdown.classList.toggle('is-open');
+                authToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+        });
+
+        document.addEventListener('click', function () {
+            document.querySelectorAll('[data-auth-dropdown].is-open').forEach(function (dropdown) {
+                dropdown.classList.remove('is-open');
+                var authToggle = dropdown.querySelector('[data-auth-toggle]');
+                if (authToggle) authToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
     })();
 </script>

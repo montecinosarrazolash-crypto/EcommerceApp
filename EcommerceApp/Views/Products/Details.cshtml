@@ -104,7 +104,7 @@
                 </div>
             }
 
-            <form class="pd-form" asp-controller="Cart" asp-action="Add" method="post" data-add-to-cart data-max-stock="@Model.Stock" data-requires-size="@(tallasProducto.Length > 0 ? "true" : "false")">
+            <form class="pd-form" asp-controller="Cart" asp-action="Add" method="post" data-add-to-cart data-max-stock="@Model.Stock" data-requires-size="@(tallasProducto.Length > 0 ? "true" : "false")" data-requires-auth="@(User.Identity != null && User.Identity.IsAuthenticated ? "false" : "true")">
                 <input type="hidden" name="productId" value="@Model.Id" />
                 <input type="hidden" name="talla" data-talla-input value="" />
                 <input type="hidden" name="genero" data-genero-input value="@(Model.Genero == "Unisex" ? "" : Model.Genero)" />
@@ -207,6 +207,12 @@
             });
 
             form.addEventListener('submit', function (e) {
+                if (form.dataset.requiresAuth === 'true') {
+                    e.preventDefault();
+                    alert('Debes iniciar sesión para realizar una compra.');
+                    window.location.href = '@Url.Action("Login", "Account")';
+                    return;
+                }
                 if (form.dataset.requiresSize === 'true') {
                     var tallaInput = form.querySelector('[data-talla-input]');
                     if (!tallaInput.value) {

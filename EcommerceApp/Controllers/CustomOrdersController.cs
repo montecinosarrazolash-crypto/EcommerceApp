@@ -10,7 +10,6 @@ namespace EcommerceApp.Controllers
 {
     // Pedidos "desde cero": el cliente describe lo que quiere y sube una foto
     // de referencia, en vez de elegir un producto ya cargado en el catálogo.
-    [Authorize]
     public class CustomOrdersController(ApplicationDbContext context, SupabaseStorageService storage, IConfiguration configuration) : Controller
     {
         private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -23,6 +22,7 @@ namespace EcommerceApp.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Nuevo(CustomOrderRequest model, IFormFile? imagen)
         {
@@ -49,6 +49,7 @@ namespace EcommerceApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Confirmacion(int id)
         {
             var pedido = await context.CustomOrderRequests
@@ -63,6 +64,7 @@ namespace EcommerceApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Mis()
         {
             var pedidos = await context.CustomOrderRequests

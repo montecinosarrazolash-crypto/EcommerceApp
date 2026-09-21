@@ -11,7 +11,6 @@ namespace EcommerceApp.Controllers
     // Cotizaciones de serigrafía/estampado: el cliente elige qué prendas
     // quiere, en qué tela, cuántas y describe el diseño. El administrador
     // revisa el pedido y contacta al cliente con la tela y el costo.
-    [Authorize]
     public class SerigrafiadoController(ApplicationDbContext context, SupabaseStorageService storage, IConfiguration configuration) : Controller
     {
         private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -24,6 +23,7 @@ namespace EcommerceApp.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Nuevo(SerigrafiadoRequest model, IFormFile? imagen, string[]? prendas)
         {
@@ -54,6 +54,7 @@ namespace EcommerceApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Confirmacion(int id)
         {
             var pedido = await context.SerigrafiadoRequests
@@ -68,6 +69,7 @@ namespace EcommerceApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Mis()
         {
             var pedidos = await context.SerigrafiadoRequests

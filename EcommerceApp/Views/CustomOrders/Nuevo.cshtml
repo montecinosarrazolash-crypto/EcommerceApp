@@ -197,7 +197,7 @@
         <div class="custom-card">
             <div asp-validation-summary="ModelOnly" class="field-error"></div>
 
-            <form class="custom-form" asp-controller="CustomOrders" asp-action="Nuevo" method="post" enctype="multipart/form-data">
+            <form class="custom-form" asp-controller="CustomOrders" asp-action="Nuevo" method="post" enctype="multipart/form-data" data-requires-auth="@(User.Identity != null && User.Identity.IsAuthenticated ? "false" : "true")">
                 <label asp-for="Descripcion">¿Qué quieres pedir?</label>
                 <textarea asp-for="Descripcion" rows="4" placeholder="Ej: Quiero un jersey de fútbol color azul y blanco, con el escudo de mi equipo al frente y un patrocinador en la manga..."></textarea>
                 <span asp-validation-for="Descripcion" class="field-error"></span>
@@ -278,6 +278,17 @@
             var input = document.getElementById('qtyInput');
             input.value = parseInt(input.value || '1', 10) + 1;
         });
+
+        (function () {
+            var form = document.querySelector('.custom-form');
+            if (form && form.dataset.requiresAuth === 'true') {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    alert('Debes iniciar sesión para enviar tu pedido personalizado.');
+                    window.location.href = '@Url.Action("Login", "Account")';
+                });
+            }
+        })();
     </script>
     <partial name="_SiteFooter" />
 

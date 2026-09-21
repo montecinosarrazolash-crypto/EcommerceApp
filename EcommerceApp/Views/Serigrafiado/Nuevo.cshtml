@@ -178,7 +178,7 @@
         <div class="sg-card">
             <div asp-validation-summary="ModelOnly" class="field-error"></div>
 
-            <form class="sg-form" asp-controller="Serigrafiado" asp-action="Nuevo" method="post" enctype="multipart/form-data">
+            <form class="sg-form" asp-controller="Serigrafiado" asp-action="Nuevo" method="post" enctype="multipart/form-data" data-requires-auth="@(User.Identity != null && User.Identity.IsAuthenticated ? "false" : "true")">
                 <label class="sg-label">¿Qué prendas quieres estampar?</label>
                 <div class="sg-chip-grid">
                     @foreach (var prenda in prendas)
@@ -253,6 +253,17 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        (function () {
+            var form = document.querySelector('.sg-form');
+            if (form && form.dataset.requiresAuth === 'true') {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    alert('Debes iniciar sesión para solicitar tu cotización.');
+                    window.location.href = '@Url.Action("Login", "Account")';
+                });
+            }
+        })();
     </script>
 
     <partial name="_SiteFooter" />
