@@ -52,6 +52,16 @@
             </li>
         </ul>
 
+        <form class="hp-search" asp-controller="Products" asp-action="Search" method="get" role="search">
+            <input type="search" name="q" id="hpSearchInput" class="hp-search__input" placeholder="Buscar productos..." autocomplete="off" maxlength="100" />
+            <button type="button" id="hpSearchMic" class="hp-search__mic" title="Buscar por voz" aria-label="Buscar por voz">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 01-14 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+            <button type="submit" class="hp-search__submit" aria-label="Buscar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+        </form>
+
         <div class="hp-header__actions">
             @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
@@ -86,7 +96,76 @@
         </div>
     </div>
 </header>
+<script src="~/js/speech.js" asp-append-version="true"></script>
 <script>
+    (function () {
+        // Buscador por voz: transcribe lo que dice el usuario y envía el
+        // formulario de búsqueda con el texto reconocido.
+        var micBtn = document.getElementById('hpSearchMic');
+        var searchInput = document.getElementById('hpSearchInput');
+
+        // Comandos de navegación por voz: si lo que se dice coincide con
+        // alguna de estas palabras clave, se navega directo a la sección
+        // en vez de hacer una búsqueda de texto en el catálogo. Se revisan
+        // en este orden porque algunas palabras son más específicas que
+        // otras (por ejemplo "básquet" antes que una búsqueda genérica).
+        var comandos = [
+            { palabras: ['basquetbol', 'basquet', 'basquetball', 'baloncesto'], url: '@Url.Action("Index", "Products", new { category = "Basquetbol" })' },
+            { palabras: ['voley', 'voleibol', 'volleyball', 'volibol'], url: '@Url.Action("Index", "Products", new { category = "Voley" })' },
+            { palabras: ['futbol', 'football', 'soccer'], url: '@Url.Action("Index", "Products", new { category = "Futbol" })' },
+            { palabras: ['catalogo', 'ver productos', 'todos los productos'], url: '@Url.Action("Index", "Products")' },
+            { palabras: ['recien llegados', 'novedades', 'lo nuevo', 'nuevos productos'], url: '@Url.Action("Index", "Home")#recien-llegados' },
+            { palabras: ['nuestras lineas', 'las lineas', 'lineas de producto', 'disciplinas'], url: '@Url.Action("Index", "Home")#nuestras-lineas' },
+            { palabras: ['personalizado', 'personalizados', 'pedido personalizado', 'a medida'], url: '@Url.Action("Nuevo", "CustomOrders")' },
+            { palabras: ['serigrafia', 'serigrafiado', 'estampado', 'estampar'], url: '@Url.Action("Nuevo", "Serigrafiado")' },
+            { palabras: ['carrito'], url: '@Url.Action("Index", "Cart")' },
+            { palabras: ['mis pedidos', 'mis ordenes', 'ver pedidos'], url: '@Url.Action("Index", "Orders")' },
+            { palabras: ['contacto', 'contactar', 'contactanos'], url: '@Url.Action("Index", "Home")#contacto' },
+            { palabras: ['inicio', 'home', 'pagina principal', 'menu principal'], url: '@Url.Action("Index", "Home")' }
+        ];
+
+        function interpretarComando(textoReconocido) {
+            var normalizado = window.Speech.normalizar(textoReconocido);
+            for (var i = 0; i < comandos.length; i++) {
+                var coincide = comandos[i].palabras.some(function (palabra) {
+                    return normalizado.indexOf(palabra) !== -1;
+                });
+                if (coincide) return comandos[i].url;
+            }
+            return null;
+        }
+
+        if (micBtn && searchInput) {
+            if (!window.Speech || !window.Speech.reconocimientoSoportado) {
+                micBtn.style.display = 'none';
+            } else {
+                micBtn.addEventListener('click', function () {
+                    micBtn.classList.add('is-listening');
+                    micBtn.setAttribute('aria-label', 'Escuchando...');
+
+                    window.Speech.escuchar(function (texto) {
+                        micBtn.classList.remove('is-listening');
+                        micBtn.setAttribute('aria-label', 'Buscar por voz');
+
+                        var urlComando = interpretarComando(texto);
+                        if (urlComando) {
+                            window.location.href = urlComando;
+                            return;
+                        }
+
+                        // No coincidió con ningún comando: se busca el texto tal cual.
+                        searchInput.value = texto;
+                        searchInput.closest('form').submit();
+                    }, function (mensaje) {
+                        micBtn.classList.remove('is-listening');
+                        micBtn.setAttribute('aria-label', 'Buscar por voz');
+                        alert(mensaje);
+                    });
+                });
+            }
+        }
+    })();
+
     (function () {
         var toggle = document.getElementById('hpNavToggle');
         var nav = document.getElementById('hpNav');

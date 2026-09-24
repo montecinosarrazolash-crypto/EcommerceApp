@@ -1,14 +1,25 @@
+using EcommerceApp.Data;
 using EcommerceApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace EcommerceApp.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ApplicationDbContext context) : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            // Vitrina de destacados: los productos activos con stock más
+            // recientes, para que la portada nunca se vea vacía ni estática.
+            var destacados = await context.Products
+                .AsNoTracking()
+                .Where(p => p.IsActive && p.Stock > 0)
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(8)
+                .ToListAsync();
+
+            return View(destacados);
         }
 
         public IActionResult Privacy()

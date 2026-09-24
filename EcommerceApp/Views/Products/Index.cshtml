@@ -8,15 +8,19 @@
         { "Basquetbol", "Basquetbol" },
         { "Otros", "Otros productos" }
     };
-    ViewData["Title"] = Model.SelectedCategory != null && titles.ContainsKey(Model.SelectedCategory)
-        ? titles[Model.SelectedCategory]
-        : "Catálogo";
+    var esBusqueda = !string.IsNullOrWhiteSpace(Model.SearchQuery);
+    ViewData["Title"] = esBusqueda
+        ? $"Resultados para \"{Model.SearchQuery}\""
+        : Model.SelectedCategory != null && titles.ContainsKey(Model.SelectedCategory)
+            ? titles[Model.SelectedCategory]
+            : "Catálogo";
 }
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <partial name="_PwaHead" />
     <title>@ViewData["Title"] - IMAGEN</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -39,9 +43,17 @@
         @if (!Model.Sections.Any() || Model.Sections.All(s => !s.Products.Any()))
         {
             <div class="catalog-empty">
-                <h2>Todavía no hay productos aquí</h2>
-                <p>Vuelve pronto — estamos cargando el catálogo.</p>
-                <a class="btn-solid" asp-controller="Home" asp-action="Index">Volver al inicio</a>
+                @if (esBusqueda)
+                {
+                    <h2>Sin resultados para "@Model.SearchQuery"</h2>
+                    <p>Prueba con otra palabra, o revisa el catálogo completo.</p>
+                }
+                else
+                {
+                    <h2>Todavía no hay productos aquí</h2>
+                    <p>Vuelve pronto — estamos cargando el catálogo.</p>
+                }
+                <a class="btn-solid" asp-controller="Products" asp-action="Index">Ver catálogo</a>
             </div>
         }
         else
@@ -50,7 +62,7 @@
             {
                 <section class="catalog-section">
                     <div class="catalog-section__head">
-                        <h2>@(titles.ContainsKey(grupo.Category) ? titles[grupo.Category] : grupo.Category)</h2>
+                        <h2>@(esBusqueda ? $"Resultados para \"{Model.SearchQuery}\"" : titles.ContainsKey(grupo.Category) ? titles[grupo.Category] : grupo.Category)</h2>
                         <span class="catalog-section__count">@grupo.Products.Count producto(s)</span>
                     </div>
 
@@ -94,5 +106,6 @@
 
     <partial name="_SiteFooter" />
 
+    <script src="~/js/pwa-register.js" asp-append-version="true"></script>
 </body>
 </html>

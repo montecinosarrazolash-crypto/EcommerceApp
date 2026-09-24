@@ -10,83 +10,186 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <partial name="_PwaHead" />
     <title>@ViewData["Title"] - IMAGEN</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
     <style>
-        .admin-form input[type="date"] {
+        .rep-hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            padding: 30px 32px;
+            margin-bottom: 26px;
+            background:
+                radial-gradient(circle at 90% -10%, rgba(255, 45, 45, 0.35), transparent 55%),
+                linear-gradient(160deg, #1a1a1a 0%, #0b0b0b 70%);
+            border: 1px solid #2c2c2c;
+        }
+        .rep-hero__eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--admin-red);
+            margin-bottom: 10px;
+        }
+        .rep-hero__eyebrow::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--admin-red);
+            box-shadow: 0 0 0 4px rgba(255, 45, 45, 0.2);
+        }
+        .rep-hero h1 {
+            margin: 0 0 6px;
+            font-size: 1.7rem;
+            font-weight: 800;
+        }
+        .rep-hero p {
+            margin: 0;
+            color: var(--admin-muted);
+            font-size: 0.92rem;
+            max-width: 640px;
+        }
+
+        .rep-filter {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+            padding-top: 22px;
+            border-top: 1px solid #262626;
+        }
+        .rep-filter .field { display: flex; flex-direction: column; gap: 6px; min-width: 170px; }
+        .rep-filter label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--admin-muted);
+        }
+        .rep-filter input[type="date"] {
             background: #0d0d0d;
             border: 1px solid #2c2c2c;
             border-radius: 0.5rem;
-            padding: 11px 14px;
+            padding: 10px 14px;
             color: var(--admin-text);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-family: inherit;
             color-scheme: dark;
         }
-        .admin-form input[type="date"]:focus {
+        .rep-filter input[type="date"]:focus {
             outline: none;
             border-color: var(--admin-red);
         }
-        .report-range {
+        .rep-filter__hint {
+            flex-basis: 100%;
+            color: var(--admin-muted);
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+        .rep-quick {
             display: flex;
-            gap: 20px;
+            gap: 8px;
             flex-wrap: wrap;
         }
-        .report-range .field { flex: 1; min-width: 180px; }
-        .report-hint {
-            color: var(--admin-muted);
-            font-size: 0.85rem;
-            margin-top: -4px;
+        .rep-quick button {
+            background: transparent;
+            border: 1px solid #2c2c2c;
+            color: var(--admin-text);
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color .15s ease, color .15s ease;
         }
+        .rep-quick button:hover,
+        .rep-quick button.is-active {
+            border-color: var(--admin-red);
+            color: var(--admin-red);
+        }
+
         .report-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
             gap: 18px;
-            margin-top: 24px;
         }
         .report-card {
-            background: var(--admin-panel-2);
+            position: relative;
+            background: linear-gradient(180deg, var(--admin-panel) 0%, #0d0d0d 100%);
             border: 1px solid #2c2c2c;
-            border-radius: 0.9rem;
-            padding: 22px;
+            border-radius: 1rem;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            transition: transform .15s ease, border-color .15s ease;
+        }
+        .report-card:hover {
+            border-color: var(--admin-red);
+            transform: translateY(-2px);
+        }
+        .report-card__top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         .report-card__icon {
-            width: 40px;
-            height: 40px;
+            width: 46px;
+            height: 46px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 0.6rem;
+            border-radius: 0.75rem;
             background: rgba(255, 20, 20, 0.15);
             color: var(--admin-red);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
         }
-        .report-card h3 { margin: 0; font-size: 1.02rem; }
-        .report-card p { margin: 0; color: var(--admin-muted); font-size: 0.85rem; flex: 1; }
+        .report-card__badge {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--admin-muted);
+            border: 1px solid #2c2c2c;
+            border-radius: 999px;
+            padding: 3px 10px;
+        }
+        .report-card h3 { margin: 0; font-size: 1.05rem; }
+        .report-card p { margin: 0; color: var(--admin-muted); font-size: 0.86rem; flex: 1; line-height: 1.45; }
         .report-card .btn-admin-red {
             width: 100%;
             border: none;
             cursor: pointer;
             text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .report-general {
-            margin-top: 24px;
+        .report-card .btn-admin-red svg { flex-shrink: 0; }
+
+        .rep-note {
+            margin-top: 22px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-            background: rgba(255, 20, 20, 0.08);
-            border: 1px solid rgba(255, 40, 40, 0.35);
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed #2c2c2c;
             border-radius: 0.9rem;
-            padding: 18px 22px;
+            padding: 16px 20px;
+            color: var(--admin-muted);
+            font-size: 0.85rem;
         }
-        .report-general p { margin: 0; color: var(--admin-text); }
-        .report-general span { color: var(--admin-muted); font-size: 0.85rem; }
+        .rep-note strong { color: var(--admin-text); }
     </style>
 </head>
 <body class="admin-page">
@@ -95,75 +198,118 @@
     <partial name="_AdminHeader" />
 
     <main class="admin-main">
-        <section class="admin-panel" style="margin-bottom:24px;">
-            <div class="admin-panel__head">
-                <h2>Rango de fechas</h2>
-            </div>
-            <div class="admin-form">
-                <div class="report-range">
-                    <div class="field">
-                        <label for="repDesde">Desde</label>
-                        <input type="date" id="repDesde" value="@haceUnMes" />
-                    </div>
-                    <div class="field">
-                        <label for="repHasta">Hasta</label>
-                        <input type="date" id="repHasta" value="@hoy" />
-                    </div>
+        <section class="rep-hero">
+            <span class="rep-hero__eyebrow">Panel de reportes</span>
+            <h1>Exporta la información del negocio</h1>
+            <p>Descarga cualquiera de estos reportes en Excel, listos para revisar o compartir. Cada archivo incluye su título, el rango consultado y la fecha en que se generó.</p>
+
+            <div class="rep-filter">
+                <div class="field">
+                    <label for="repDesde">Desde</label>
+                    <input type="date" id="repDesde" value="@haceUnMes" />
                 </div>
-                <p class="report-hint">Este rango aplica a los reportes de Pedidos, Personalizados y Serigrafía (según su fecha de creación). El reporte de Inventario siempre muestra el estado actual.</p>
+                <div class="field">
+                    <label for="repHasta">Hasta</label>
+                    <input type="date" id="repHasta" value="@hoy" />
+                </div>
+                <div class="rep-quick">
+                    <button type="button" data-rango="7">Últimos 7 días</button>
+                    <button type="button" data-rango="30" class="is-active">Últimos 30 días</button>
+                    <button type="button" data-rango="90">Últimos 90 días</button>
+                </div>
+                <p class="rep-filter__hint">Este rango aplica a Pedidos, Personalizados y Serigrafía (según su fecha de creación). Inventario siempre muestra el stock actual.</p>
             </div>
         </section>
 
         <section class="report-grid">
             <div class="report-card">
-                <span class="report-card__icon">🧾</span>
+                <div class="report-card__top">
+                    <span class="report-card__icon">🧾</span>
+                    <span class="report-card__badge">Por rango</span>
+                </div>
                 <h3>Pedidos</h3>
                 <p>Pedidos confirmados del carrito, con productos, tallas, personalización y montos. Incluye una hoja de resumen por estado.</p>
-                <button type="button" class="btn-admin-red" data-report="DescargarPedidos">Descargar Excel</button>
+                <button type="button" class="btn-admin-red" data-report="DescargarPedidos">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Descargar Excel
+                </button>
             </div>
 
             <div class="report-card">
-                <span class="report-card__icon">🎨</span>
+                <div class="report-card__top">
+                    <span class="report-card__icon">🎨</span>
+                    <span class="report-card__badge">Por rango</span>
+                </div>
                 <h3>Pedidos personalizados</h3>
                 <p>Solicitudes de prendas hechas desde cero: descripción, cantidad, contacto y estado de cada una.</p>
-                <button type="button" class="btn-admin-red" data-report="DescargarPersonalizados">Descargar Excel</button>
+                <button type="button" class="btn-admin-red" data-report="DescargarPersonalizados">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Descargar Excel
+                </button>
             </div>
 
             <div class="report-card">
-                <span class="report-card__icon">🖨️</span>
+                <div class="report-card__top">
+                    <span class="report-card__icon">🖨️</span>
+                    <span class="report-card__badge">Por rango</span>
+                </div>
                 <h3>Serigrafía</h3>
                 <p>Cotizaciones de estampado: prendas, tela, cantidad, descripción y estado de cada cotización.</p>
-                <button type="button" class="btn-admin-red" data-report="DescargarSerigrafiado">Descargar Excel</button>
+                <button type="button" class="btn-admin-red" data-report="DescargarSerigrafiado">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Descargar Excel
+                </button>
             </div>
 
             <div class="report-card">
-                <span class="report-card__icon">📦</span>
+                <div class="report-card__top">
+                    <span class="report-card__icon">📦</span>
+                    <span class="report-card__badge">Estado actual</span>
+                </div>
                 <h3>Inventario</h3>
                 <p>Catálogo completo con stock, precio y valor de inventario por producto. No usa el rango de fechas.</p>
-                <button type="button" class="btn-admin-red" data-report="DescargarInventario" data-sin-fecha="true">Descargar Excel</button>
+                <button type="button" class="btn-admin-red" data-report="DescargarInventario" data-sin-fecha="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0l-5-5m5 5l5-5M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Descargar Excel
+                </button>
             </div>
         </section>
 
-        <section class="report-general">
-            <div>
-                <p><strong>¿Necesitas todo junto?</strong></p>
-                <span>Descarga cada reporte por separado con los botones de arriba, usando el mismo rango de fechas.</span>
-            </div>
-        </section>
+        <div class="rep-note">
+            <span>💡</span>
+            <span>Cada Excel trae su propio <strong>título</strong> y la <strong>fecha de generación</strong> en la parte superior de la hoja, así siempre queda claro qué es y cuándo se sacó.</span>
+        </div>
     </main>
 
     <script>
+        var desdeInput = document.getElementById('repDesde');
+        var hastaInput = document.getElementById('repHasta');
+
+        document.querySelectorAll('.rep-quick button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.rep-quick button').forEach(function (b) { b.classList.remove('is-active'); });
+                btn.classList.add('is-active');
+
+                var dias = parseInt(btn.dataset.rango, 10);
+                var hasta = new Date();
+                var desde = new Date();
+                desde.setDate(desde.getDate() - dias);
+
+                var toIso = function (d) { return d.toISOString().slice(0, 10); };
+                desdeInput.value = toIso(desde);
+                hastaInput.value = toIso(hasta);
+            });
+        });
+
         document.querySelectorAll('[data-report]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var accion = btn.dataset.report;
                 var url = '/Reports/' + accion;
 
                 if (btn.dataset.sinFecha !== 'true') {
-                    var desde = document.getElementById('repDesde').value;
-                    var hasta = document.getElementById('repHasta').value;
                     var params = [];
-                    if (desde) params.push('desde=' + encodeURIComponent(desde));
-                    if (hasta) params.push('hasta=' + encodeURIComponent(hasta));
+                    if (desdeInput.value) params.push('desde=' + encodeURIComponent(desdeInput.value));
+                    if (hastaInput.value) params.push('hasta=' + encodeURIComponent(hastaInput.value));
                     if (params.length) url += '?' + params.join('&');
                 }
 
@@ -171,5 +317,6 @@
             });
         });
     </script>
+    <script src="~/js/pwa-register.js" asp-append-version="true"></script>
 </body>
 </html>

@@ -67,6 +67,39 @@ namespace EcommerceApp.Controllers
             return View(viewModel);
         }
 
+        // Búsqueda de texto (usada tanto por el buscador escrito como por el
+        // buscador por voz del header, que transcribe el audio y envía el
+        // texto resultante aquí como si el usuario lo hubiera escrito).
+        [AllowAnonymous]
+        public async Task<IActionResult> Search(string? q)
+        {
+            q = (q ?? string.Empty).Trim();
+
+            if (string.IsNullOrEmpty(q))
+                return RedirectToAction(nameof(Index));
+
+            var resultados = await context.Products
+                .AsNoTracking()
+                .Where(p => p.IsActive && (
+                    EF.Functions.ILike(p.Name, $"%{q}%") ||
+                    EF.Functions.ILike(p.Description, $"%{q}%") ||
+                    (p.Category != null && EF.Functions.ILike(p.Category, $"%{q}%"))))
+                .ToListAsync();
+
+            var viewModel = new ProductCatalogViewModel { SearchQuery = q };
+
+            if (resultados.Count > 0)
+            {
+                viewModel.Sections.Add(new CategorySectionViewModel
+                {
+                    Category = "Resultados",
+                    Products = resultados
+                });
+            }
+
+            return View(nameof(Index), viewModel);
+        }
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Manage()
         {

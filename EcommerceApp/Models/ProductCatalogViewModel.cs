@@ -3,6 +3,7 @@ namespace EcommerceApp.Models
     public class ProductCatalogViewModel
     {
         public string? SelectedCategory { get; set; }
+        public string? SearchQuery { get; set; }
         public List<CategorySectionViewModel> Sections { get; set; } = new();
     }
 

@@ -116,6 +116,31 @@
 
 .pd-wishlist:hover { color: var(--crimson); }
 
+.pd-listen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid #d9d9dc;
+  border-radius: 4px;
+  padding: 7px 14px;
+  color: var(--steel-dim, #5c6167);
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin: 4px 0 20px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.pd-listen-btn:hover {
+  color: var(--crimson);
+  border-color: var(--crimson);
+}
+
+.pd-listen-btn.is-active {
+  color: var(--crimson);
+  border-color: var(--crimson);
+}
+
 .pd-meta {
   border-top: 1px solid #e7e7e9;
   padding-top: 18px;

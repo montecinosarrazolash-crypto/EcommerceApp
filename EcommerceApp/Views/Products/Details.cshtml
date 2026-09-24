@@ -9,6 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <partial name="_PwaHead" />
     <title>@ViewData["Title"] - IMAGEN</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -65,6 +66,11 @@
             </span>
 
             <p class="pd-description">@Model.Description</p>
+
+            <button type="button" id="pdListenBtn" class="pd-listen-btn" data-listen-text="@Model.Name. @Model.Description">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 4V5L8 9H4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M17 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                <span data-listen-label>Escuchar descripción</span>
+            </button>
 
             @{
                 var tallasProducto = (Model.Tallas ?? "")
@@ -165,6 +171,42 @@
     <partial name="_SiteFooter" />
 
     <script>
+        // Botón "Escuchar descripción": lee el nombre y la descripción del
+        // producto en voz alta con el Web Speech API. Si el navegador no
+        // soporta síntesis de voz, se oculta el botón directamente.
+        (function () {
+            var btn = document.getElementById('pdListenBtn');
+            if (!btn) return;
+
+            if (!window.Speech || !window.Speech.sintesisSoportada) {
+                btn.style.display = 'none';
+                return;
+            }
+
+            var label = btn.querySelector('[data-listen-label]');
+            var leyendo = false;
+
+            btn.addEventListener('click', function () {
+                if (leyendo) {
+                    window.Speech.detenerLectura();
+                    leyendo = false;
+                    label.textContent = 'Escuchar descripción';
+                    btn.classList.remove('is-active');
+                    return;
+                }
+
+                leyendo = true;
+                label.textContent = 'Detener lectura';
+                btn.classList.add('is-active');
+
+                window.Speech.leer(btn.dataset.listenText, function () {
+                    leyendo = false;
+                    label.textContent = 'Escuchar descripción';
+                    btn.classList.remove('is-active');
+                });
+            });
+        })();
+
         document.querySelectorAll('[data-size-btn]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 document.querySelectorAll('[data-size-btn]').forEach(function (b) { b.classList.remove('is-selected'); });
@@ -223,5 +265,6 @@
             });
         });
     </script>
+    <script src="~/js/pwa-register.js" asp-append-version="true"></script>
 </body>
 </html>
