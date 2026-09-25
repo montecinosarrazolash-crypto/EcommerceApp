@@ -18,7 +18,6 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <partial name="_PwaHead" />
     <title>@ViewData["Title"] - IMAGEN</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -128,7 +127,7 @@
         .sg-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
         .sg-upload__text { font-size: 0.88rem; color: var(--steel-dim); }
         .sg-upload__preview { display: none; margin-top: 12px; }
-        .sg-upload__preview img { max-height: 130px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .sg-upload__preview img { max-height: 130px; max-width: 100%; width: auto; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
         .sg-form button[type="submit"] {
             margin-top: 26px;
@@ -164,6 +163,7 @@
             color: var(--steel-dim);
         }
     </style>
+    <partial name="_PwaHead" />
 </head>
 <body class="home-page catalog-page">
 
@@ -269,6 +269,5 @@
 
     <partial name="_SiteFooter" />
 
-    <script src="~/js/pwa-register.js" asp-append-version="true"></script>
 </body>
 </html>

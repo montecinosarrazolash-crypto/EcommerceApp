@@ -16,13 +16,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <partial name="_PwaHead" />
     <title>@ViewData["Title"] - IMAGEN</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/catalog.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+    <partial name="_PwaHead" />
 </head>
 <body class="home-page catalog-page">
 
@@ -38,7 +38,7 @@
 
     <main class="cart-main">
         <h1 class="cart-title">Mis pedidos</h1>
-        <p style="color:var(--steel-dim); margin-top:-14px; margin-bottom:22px; max-width:640px;">
+        <p style="color:var(--steel-dim); margin-top:0; margin-bottom:22px; max-width:640px;">
             <strong>Pendiente</strong>: lo recibimos y lo estamos preparando ·
             <strong>Completado</strong>: ya está listo, nos pondremos en contacto contigo para coordinar la entrega ·
             <strong>Cancelado</strong>: el pedido no siguió adelante.
@@ -85,14 +85,14 @@
                             if (!string.IsNullOrWhiteSpace(item.NumeroPersonalizado)) detalles.Add($"N° {item.NumeroPersonalizado}");
                             var detalleTexto = detalles.Count > 0 ? $"({string.Join(", ", detalles)})" : "";
                             <div class="order-card__item">
-                                <span>
+                                <div class="order-card__item-desc">
                                     @item.Quantity× @item.ProductName @detalleTexto
                                     @if (!string.IsNullOrWhiteSpace(item.Notas))
                                     {
                                         <div class="cart-item__notes">📝 @item.Notas</div>
                                     }
-                                </span>
-                                <span>Bs @((item.UnitPrice * item.Quantity).ToString("N2"))</span>
+                                </div>
+                                <span class="order-card__item-price">Bs @((item.UnitPrice * item.Quantity).ToString("N2"))</span>
                             </div>
                         }
                     </div>
@@ -107,6 +107,5 @@
     </main>
     <partial name="_SiteFooter" />
 
-    <script src="~/js/pwa-register.js" asp-append-version="true"></script>
 </body>
 </html>

@@ -8,7 +8,6 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <partial name="_PwaHead" />
     <title>@ViewData["Title"] - IMAGEN</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -53,6 +52,7 @@
 
         .confirm-back { display: block; margin-top: 22px; color: var(--steel-dim); }
     </style>
+    <partial name="_PwaHead" />
 </head>
 <body class="home-page catalog-page">
 
@@ -72,7 +72,7 @@
             @if (!string.IsNullOrWhiteSpace(Model.ImagenReferenciaUrl))
             {
                 <dt>Referencia</dt>
-                <dd><img src="@Model.ImagenReferenciaUrl" alt="Referencia" style="max-width:120px;border-radius:8px;margin-top:4px;" /></dd>
+                <dd><img src="@Model.ImagenReferenciaUrl" alt="Referencia" style="max-width:120px;max-height:120px;object-fit:cover;border-radius:8px;margin-top:4px;" /></dd>
             }
         </dl>
 
@@ -88,6 +88,5 @@
     </main>
     <partial name="_SiteFooter" />
 
-    <script src="~/js/pwa-register.js" asp-append-version="true"></script>
 </body>
 </html>

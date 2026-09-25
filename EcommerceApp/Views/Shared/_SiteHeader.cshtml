@@ -96,7 +96,13 @@
         </div>
     </div>
 </header>
+
+<button type="button" id="pwaInstallBtn" class="hp-install-fab" aria-label="Instalar app" title="Instalar app" hidden>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v6m0 0l-2.5-2.5M12 14l2.5-2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="hp-install-fab__label">Instalar app</span>
+</button>
 <script src="~/js/speech.js" asp-append-version="true"></script>
+<script src="~/js/pwa.js" asp-append-version="true"></script>
 <script>
     (function () {
         // Buscador por voz: transcribe lo que dice el usuario y envía el

@@ -78,7 +78,30 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+// El manifest.webmanifest necesita servirse con este content-type exacto
+// para que Chrome/Edge lo reconozcan como manifest de PWA. La mayoría de
+// versiones de ASP.NET Core ya lo mapean por defecto, pero se declara
+// explícito para no depender de eso.
+var proveedorTipos = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+proveedorTipos.Mappings[".webmanifest"] = "application/manifest+json";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = proveedorTipos,
+    OnPrepareResponse = ctx =>
+    {
+        // sw.js debe poder controlar TODO el sitio (scope "/"), y para eso
+        // el navegador exige que no se cachee agresivamente: si un CDN o el
+        // navegador sirve una copia vieja del service worker, los usuarios
+        // dejan de recibir actualizaciones del sitio sin darse cuenta.
+        if (ctx.File.Name == "sw.js")
+        {
+            ctx.Context.Response.Headers["Cache-Control"] = "no-cache";
+        }
+    }
+});
+
 app.UseRouting();
 
 app.UseAuthentication();
